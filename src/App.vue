@@ -1,27 +1,46 @@
 <template>
-  	<MoviePage msg="Welcome to Your Vue.js App"/>
+	<div class="app-main" @click="handleSelect">
+		<NavMenu></NavMenu>
+		<div class="main-wrap" :style="store.getters.mainTopStyle">
+			<router-view></router-view>
+		</div>
+	</div>
 </template>
 
 <script>
-import MoviePage from './single-page/movie/movie-page.jsx'
+import NavMenu from '@/single-page/componnets/nav-menu.vue'
+import { useStore } from 'vuex'
 
 export default {
   	name: 'App',
-  	components: {
-    	MoviePage
-  	}
+	components: {
+		NavMenu,
+	},
+	setup() {
+		const store = new useStore()
+		return {
+			store
+		}
+	},
+	methods: {
+		
+	}
 }
 </script>
 
-<style>
-body, div{
-	padding: 0;
-	margin: 0;
+<style scoped>
+.app-main{
+	background: url('@/assets/bg.jpg');
+	background-size: 100% auto;
+	background-repeat: no-repeat;
+	background-position: 0 61px;
+	padding: 61px 12px 12px 12px;
+	box-sizing: border-box;
+	height: 100%;
+	width: 100%;
 }
-#app {
-	font-family: Avenir, Helvetica, Arial, sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	padding: 0 12px 12px 12px;
+.main-wrap{
+	width: 62%;
+	margin: 0 auto;
 }
 </style>
