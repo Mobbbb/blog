@@ -41,6 +41,9 @@ export default {
 }
 .main-wrap{
 	width: 62%;
+	height: calc(100% - 24px);
+	min-width: 660px;
 	margin: 0 auto;
+	background: #fff;
 }
 </style>

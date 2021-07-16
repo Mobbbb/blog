@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import { useStore } from 'vuex'
-import data from '.';
+import data from './data.js'
+import './movie-page.css'
 
 export default defineComponent({
 	name: 'movie-page',

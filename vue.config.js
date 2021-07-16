@@ -17,6 +17,7 @@ module.exports = {
     publicPath: '/',
     outputDir: 'dist',
     assetsDir: 'static',
+    // filenameHashing: false, 文件不带hash
     productionSourceMap: false,
 
     devServer: {
@@ -24,6 +25,11 @@ module.exports = {
     },
 
     configureWebpack: {
+        /*(config) => {
+            config.output.filename = 'static/js/[name].[hash].js'; // 入口文件chunk的命名
+            config.output.chunkFilename = 'static/js/[name].[hash].js'; // 除入口文件外的chunk的命名
+        }*/
+        
         // provide the app's title in webpack's name field, so that
         // it can be accessed in index.html to inject the correct title.
         name: 'Blog',
