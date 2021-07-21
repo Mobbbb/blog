@@ -3,7 +3,7 @@
         <div class="home-header-wrap">
             <div class="home-header">
                 <span>番剧评价</span>
-                <a   v-for="item in months" 
+                <a  v-for="item in months" 
                     :key="item.value" 
                     :class="activeMonth === item.value ? 'link-active' : ''" 
                     @click="selectedMonth(item.value)">{{item.name}}</a>
@@ -38,6 +38,7 @@
 
 <script>
 import listData, { months } from './data.js'
+import { deepClone } from '@/libs/util'
 import { ref } from 'vue'
 import AnimationItem from './nanimation-item.vue'
 
@@ -48,7 +49,8 @@ export default {
     },
     data() {
         const existDataYears = []
-        listData.forEach((item, index) => {
+        const _listData = deepClone(listData)
+        _listData.forEach((item, index) => {
             let labelArr = [], hoverShowLabel = []
             item.label.forEach(name => {
                 labelArr.push({ name })
@@ -77,7 +79,7 @@ export default {
             },
 
             months,
-            listData,
+            listData: _listData,
             existDataYears,
         }
     },

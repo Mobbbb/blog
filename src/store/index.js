@@ -3,7 +3,8 @@ import { createStore } from 'vuex'
 const store = createStore({
     state() {
         return {
-            mainTopGap: 32
+            mainTopGap: 32,
+            searchText: '',
         }
     },
     getters: {
@@ -12,6 +13,11 @@ const store = createStore({
                 marginTop: `${state.mainTopGap}px`
             }
         }
+    },
+    mutations: {
+        updateInputValue(state, value) {
+            state.searchText = value
+        },
     },
 })
 
