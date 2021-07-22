@@ -6,6 +6,10 @@ import store from './store'
 import './libs/index.js'
 import './styles/index.css'
 
+if (process.env.NODE_ENV === 'development') {
+    require('element-plus/lib/theme-chalk/index.css')
+}
+
 const app = createApp(App)
 
 app.use(ElementPlus)

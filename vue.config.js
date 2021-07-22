@@ -1,5 +1,7 @@
 'use strict';
+const name = 'Blog';
 const path = require('path');
+const resourceConfig = require('./src/config/resource.js');
 
 function resolve(dir) {
     return path.join(__dirname, dir)
@@ -24,23 +26,32 @@ module.exports = {
         // proxy: 'http://a.b.com'
     },
 
-    configureWebpack: {
-        /*(config) => {
-            config.output.filename = 'static/js/[name].[hash].js'; // 入口文件chunk的命名
-            config.output.chunkFilename = 'static/js/[name].[hash].js'; // 除入口文件外的chunk的命名
-        }*/
-        
-        // provide the app's title in webpack's name field, so that
-        // it can be accessed in index.html to inject the correct title.
-        name: 'Blog',
-        resolve: {
-            alias: {
-                '@': resolve('src'),
+    configureWebpack: (config) => {
+        // config.output.filename = 'static/js/[name].[hash].js'; // 入口文件chunk的命名
+        // config.output.chunkFilename = 'static/js/[name].[hash].js'; // 除入口文件外的chunk的命名
+        if (process.env.NODE_ENV === 'production') { // 打包时使用cdn
+            config.externals = {
+                'vue': 'Vue',
+                'element-plus': 'ElementPlus',
             }
-        },
-        externals: {
-            'vue': 'Vue',
-            'element-plus': 'ElementPlus',
-        },
+        }
+        
+        return {
+            resolve: {
+                alias: {
+                    '@': resolve('src'),
+                }
+            },
+        }
+    },
+    chainWebpack: (config) => {
+        if (process.env.NODE_ENV === 'production') {
+            // 生产环境下注入在html模板注入cdn
+            config.plugin('html').tap(args => {
+                args[0].title= name
+                args[0].resourceConfig = resourceConfig
+                return args
+            })
+        }
     },
 };

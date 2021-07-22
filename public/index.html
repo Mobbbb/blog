@@ -4,11 +4,15 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
-		<meta name="description" content="心得、总结、电影评价、代码分享">
-		<meta name="keywords" content="心得、总结、电影评价、代码分享">
+		<meta name="description" content="动漫、电影评价">
+		<meta name="keywords" content="动漫、电影评价">
         <link rel="icon" href="./favicon.jpg">
-		<link rel="stylesheet" href="./element-plus.1.0.2-beta.52.css">
-		<script src="./vue.3.0.4&element-plus.1.0.2-beta.52.js"></script>
+		<% for (var i in htmlWebpackPlugin.options.resourceConfig && htmlWebpackPlugin.options.resourceConfig.css) { %>
+			<link href="<%= htmlWebpackPlugin.options.resourceConfig.css[i] %>" rel="stylesheet">
+		<% } %>
+		<% for (var i in htmlWebpackPlugin.options.resourceConfig && htmlWebpackPlugin.options.resourceConfig.js) { %>	
+			<script src="<%= htmlWebpackPlugin.options.resourceConfig.js[i] %>"></script>
+		<% } %>
 		<title><%= htmlWebpackPlugin.options.title %></title>
   	</head>
   	<body>
