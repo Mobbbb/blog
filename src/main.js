@@ -1,11 +1,10 @@
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
-import 'element-plus/lib/theme-chalk/index.css'
-import './styles/index.css'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import './libs/index.js'
+import './styles/index.css'
 
 const app = createApp(App)
 

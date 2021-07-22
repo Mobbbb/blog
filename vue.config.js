@@ -37,6 +37,10 @@ module.exports = {
             alias: {
                 '@': resolve('src'),
             }
-        }
+        },
+        externals: {
+            'vue': 'Vue',
+            'element-plus': 'ElementPlus',
+        },
     },
 };
