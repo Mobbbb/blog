@@ -1,23 +1,11 @@
 import { createStore } from 'vuex'
+import app from './app'
+import home from './home'
 
 const store = createStore({
-    state() {
-        return {
-            mainTopGap: 32,
-            searchText: '',
-        }
-    },
-    getters: {
-        mainTopStyle(state) {
-            return {
-                marginTop: `${state.mainTopGap}px`
-            }
-        }
-    },
-    mutations: {
-        updateInputValue(state, value) {
-            state.searchText = value
-        },
+    modules: {
+        app,
+        home,
     },
 })
 

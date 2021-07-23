@@ -1,26 +1,30 @@
 <template>
     <div class="home-wrap">
         <div class="home-header-wrap">
-            <div class="home-header">
+            <div class="home-header" v-if="searchFlag">
+                <span>搜索结果</span>
+                <div class="search-tips">共找到<span>{{showAnimationList.length}}</span>条记录</div>
+            </div>
+            <div class="home-header" v-else>
                 <span>番剧评价</span>
-                <a  v-for="item in months" 
+                <a  v-for="item in months"
                     :key="item.value" 
                     :class="activeMonth === item.value ? 'link-active' : ''" 
                     @click="selectedMonth(item.value)">{{item.name}}</a>
             </div>
-            <div class="date-picker-wrap">
+            <div class="date-picker-wrap" v-if="!searchFlag">
                 <el-button  type="text" 
                             icon="el-icon-d-arrow-left" 
                             class="change-date-icon" 
                             @click="changeYears(-1)" :disabled="prevYearBtnDisabled">
                 </el-button>
-                <el-date-picker v-model="years" 
+                <el-date-picker v-model="selectedYears" 
                                 type="year" 
                                 size="mini" 
                                 style="width: 100px;" 
                                 :clearable="false" 
                                 :disabled-date="disabledDate"
-                                @change="onYearsPick">
+                                value-format="YYYY">
                 </el-date-picker>
                 <el-button  type="text" 
                             icon="el-icon-d-arrow-right" 
@@ -31,15 +35,22 @@
         </div>
     
         <div class="home-content">
-            <AnimationItem :data="item" :listData="listData" v-for="item in showListData" :key="item._index"></AnimationItem>
+            <template v-if="showAnimationList.length">
+                <AnimationItem  :data="item" 
+                                :key="item._index"
+                                :searchFlag="searchFlag"
+                                :listData="animationList" 
+                                v-for="item in showAnimationList">
+                </AnimationItem>
+            </template>
+            <el-empty description="暂无数据" v-else></el-empty>
         </div>
     </div>
 </template>
 
 <script>
-import listData, { months } from './data.js'
-import { deepClone } from '@/libs/util'
-import { ref } from 'vue'
+import { months } from './data.js'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import AnimationItem from './nanimation-item.vue'
 
 export default {
@@ -48,81 +59,61 @@ export default {
         AnimationItem,
     },
     data() {
-        const existDataYears = []
-        const _listData = deepClone(listData)
-        _listData.forEach((item, index) => {
-            let labelArr = [], hoverShowLabel = []
-            item.label.forEach(name => {
-                labelArr.push({ name })
-                hoverShowLabel.push(name)
-            })
-
-            if (!existDataYears.includes(item.years)) {
-                existDataYears.push(item.years)
-            }
-
-            item.showName = item.name
-            if (item.season) {
-                item.showName += ' ' + item.season
-            }
-            item.label = labelArr
-            item.hoverShowLabel = ref(hoverShowLabel)
-            item._index = index
-        })
-        existDataYears.sort((a, b) => a - b)
-
         return {
-            years: '',
-            activeMonth: '',
-            disabledDate(time) {
-                return !existDataYears.includes(time.getFullYear().toString())
-            },
-
             months,
-            listData: _listData,
-            existDataYears,
         }
     },
     computed: {
-        showListData() {
-            return this.listData.filter((item) => {
-                return item.years === this.years && item.month === this.activeMonth
-            })
+        ...mapState('home', [
+            'activeMonth',
+            'animationList',
+        ]),
+        ...mapState('app', [
+            'searchFlag',
+        ]),
+        ...mapGetters('home', [
+            'availableYears',
+            'showAnimationList',
+        ]),
+        selectedYears: {
+            get() {
+                return this.$store.state.home.selectedYears
+            },
+            set(value) {
+                this.updateYears(value)
+            },
+        },
+        disabledDate() {
+            return (time) => {
+                return !this.availableYears.includes(time.getFullYear().toString())
+            }
         },
         prevYearBtnDisabled() {
-            return this.existDataYears[0] === this.years
+            return this.availableYears[0] === this.selectedYears
         },
         nextYearBtnDisabled() {
-            return this.existDataYears[this.existDataYears.length - 1] === this.years
+            return this.availableYears[this.availableYears.length - 1] === this.selectedYears
         },
     },
     mounted() {
         this.initDate()
+        this.getAnimationHandle()
     },
     methods: {
-        initDate() {
-            const years = (new Date()).getFullYear().toString()
-            this.years = localStorage.getItem('pick-years') || years
-
-            this.activeMonth = localStorage.getItem('pick-month') || months[0].value
-        },
-        onYearsPick(years) {
-            this.years = years.getFullYear().toString()
-            localStorage.setItem('pick-years', this.years)
-        },
+        ...mapMutations('home', [
+            'updateActiveMonth',
+            'updateYears',
+        ]),
+        ...mapActions('home', [
+            'initDate', 
+            'getAnimationHandle',
+            'changeYearsHandle',
+        ]),
         changeYears(value) {
-            this.recursionYears(value)
-            localStorage.setItem('pick-years', this.years)
-        },
-        recursionYears(value) {
-            this.years = (Number(this.years) + value).toString()
-            if (!this.existDataYears.includes(this.years)) {
-                this.recursionYears(value)
-            }
+            this.changeYearsHandle(value)
         },
         selectedMonth(index) {
-            this.activeMonth = index
-            localStorage.setItem('pick-month', index)
+            this.updateActiveMonth(index)
         },
     },
 }
@@ -132,16 +123,33 @@ export default {
 .home-wrap {
     background: #fff;
     padding: 20px;
+    position: relative;
 }
 .home-header-wrap {
     display: flex;
     justify-content: space-between;
+    height: 40px;
 }
-.home-header span{
+.home-header > span{
     font-size: 20px;
     color: #222;
     line-height: 26px;
     margin-right: 20px;
+}
+.home-header .search-back {
+    position: absolute;
+    left: 0;
+}
+.home-header .search-tips {
+    display: inline-block;
+    color: #909399;
+    font-size: 12px;
+    margin-left: -8px;
+}
+.home-header .search-tips span {
+    color: #4c8fe8;
+    margin: 0 4px;
+    font-weight: 700;
 }
 .home-header a {
     font-size: 12px;

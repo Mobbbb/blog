@@ -1,6 +1,10 @@
 <template>
     <div class="animation-item">
-        <img :src="data.cover.default"> 
+        <div class="image-wrap">
+            <img :src="data.cover.default">
+            <div class="image-label image-left-label" v-if="searchFlag">{{data.years}}</div>
+            <div class="image-label image-right-label" v-if="searchFlag">{{data.month}}月</div>
+        </div>
         <div class="animation-item-right">
             <el-tooltip :disabled="data.tooltipDisabled" :content="data.showName" placement="top">
                 <h4 class="animation-item-title paddingLeft4" ref="titleRef">{{data.showName}}</h4>
@@ -54,7 +58,7 @@ const totalScore = 5
 
 export default {
     name: 'animation-item',
-    props: ['data', 'listData'],
+    props: ['data', 'searchFlag', 'listData'],
     data() {
         return {
             moreLabelWidth,
@@ -186,16 +190,38 @@ export default {
     float: left;
     height: 140px;
 }
-.animation-item img {
+.image-wrap {
+    position: relative;
+    margin-right: 16px;
+}
+.image-label {
+    position: absolute;
+    top: 0;
+    font-size: 12px;
+    height: 20px;
+    line-height: 20px;
+    padding: 0 6px;
+    color: #fff;
+}
+.image-left-label {
+    left: 0;
+    background: rgb(251, 114, 153);
+    border-radius: 4px 0 4px 0;
+}
+.image-right-label {
+    right: 0;
+    background: rgb(0, 192, 255);
+    border-radius: 0 4px 0 4px;
+}
+.image-wrap img {
     display: block;
-    width: 110px;
+    width: 109px;
     height: 140px;
     overflow: hidden;
     text-decoration: none;
     border-radius: 4px;
     box-shadow: 0 0 2px 0 rgb(0 0 0 / 10%);
     flex-shrink: 0;
-    margin-right: 16px;
 }
 .animation-item-right {
     overflow: hidden;

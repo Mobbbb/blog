@@ -16,7 +16,7 @@ export default defineComponent({
 		}
 	},
 	render() {
-		const outsideHeight = 61 + this.store.state.mainTopGap
+		const outsideHeight = 61 + this.store.state.app.mainTopGap
 		const paddingTopAndBottom = 32
 		return (
 			<div class="table-head-class">

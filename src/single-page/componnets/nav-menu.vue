@@ -4,7 +4,7 @@
             <el-menu    background-color="transparent" 
                         class="el-menu-nav" 
                         mode="horizontal" 
-                        :default-active="activeIndex" 
+                        :default-active="activeNavIndex" 
                         @select="handleSelect" 
                         router>
                 <el-menu-item index="home">首页</el-menu-item>
@@ -12,31 +12,35 @@
                 <el-menu-item index="summary">总结</el-menu-item>
             </el-menu>
         
-            <el-input
-                placeholder="请输入番名"
-                suffix-icon="el-icon-search"
-                class="search-input"
-                size="mini"
-                v-model="searchText">
-            </el-input>
+            <div class="search-input-wrap">
+                <i class="el-icon-search search-icon"></i>
+                <input  placeholder="请输入剧名" 
+                        @keydown.enter="onEnter" 
+                        type="text" 
+                        class="search-input" 
+                        v-model="searchText">
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 
 export default {
   	name: 'nav-menu',
     data() {
         return {
-            activeIndex: '',
+            
         }
     },
     computed: {
+        ...mapState('app', [
+            'activeNavIndex',
+        ]),
         searchText: {
             get() {
-                return this.$store.state.searchText
+                return this.$store.state.app.searchText
             },
             set(value) {
                 this.updateInputValue(value)
@@ -44,15 +48,23 @@ export default {
         },
     },
     mounted() {
-        this.activeIndex = localStorage.getItem('active-nav-index') || 'home'
+        this.initActiveNavIndex()
     },
 	methods: {
-        ...mapMutations([
+        ...mapMutations('app', [
             'updateInputValue',
+            'updateActiveNavIndex',
+        ]),
+        ...mapActions('app', [
+            'searchHandle',
+            'initActiveNavIndex',
         ]),
 		handleSelect(activeIndex) {
-            this.activeIndex = activeIndex
+            this.updateActiveNavIndex(activeIndex)
 		},
+        onEnter() {
+            this.searchHandle()
+        },
 	}
 }
 </script>
@@ -74,12 +86,40 @@ export default {
 	width: 62%;
 	margin: 0 auto;
 }
-.search-input {
+.search-input-wrap {
+    position: absolute;
     display: inline-block;
     width: 120px;
-    position: absolute;
+    height: 28px;
+    line-height: 28px;
+    right: 16px;
     top: 16px;
-    right: 0;
+}
+.search-input-wrap input {
+    background: rgba(256, 256, 256, 0.3);
+    border-radius: 20px;
+    border: 1px solid #DCDFE6;
+    box-sizing: border-box;
+    display: inline-block;
+    height: 28px;
+    line-height: 28px;
+    outline: 0;
+    padding: 0 30px 0 15px;
+    transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+    width: 100%;
+    font-size: 12px;
+    color: #606266;
+}
+.search-input-wrap input:focus {
+    border-color: #409EFF;
+    outline: 0;
+}
+.search-input-wrap .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    color: #C0C4CC;
+    font-size: 12px;
 }
 </style>
 
@@ -90,9 +130,5 @@ export default {
 }
 .el-menu-nav > .el-menu-item:hover{
     background-color: transparent !important;
-}
-.search-input .el-input__inner {
-    background: rgba(256, 256, 256, 0.3);
-    border-radius: 20px;
 }
 </style>

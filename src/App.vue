@@ -1,7 +1,7 @@
 <template>
 	<div class="app-main" @click="handleSelect">
 		<NavMenu></NavMenu>
-		<div class="main-wrap" :style="store.getters.mainTopStyle">
+		<div class="main-wrap" :style="store.getters['app/mainTopStyle']">
 			<router-view></router-view>
 		</div>
 	</div>
@@ -45,5 +45,7 @@ export default {
 	min-width: 660px;
 	margin: 0 auto;
 	background: #fff;
+	box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
+	overflow: scroll;
 }
 </style>
