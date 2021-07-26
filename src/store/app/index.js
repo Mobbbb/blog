@@ -1,3 +1,5 @@
+import router, { home, movie } from '@/router'
+
 const app = {
     namespaced: true,
     state() {
@@ -13,7 +15,13 @@ const app = {
             return {
                 marginTop: `${state.mainTopGap}px`
             }
-        }
+        },
+        searchPopoverData(state, getters, rootState) {
+            if (router.currentRoute.value.name === home.name) {
+                return rootState.home.allLabelArr
+            }
+            return []
+        },
     },
     mutations: {
         updateInputValue(state, value) {
@@ -35,9 +43,12 @@ const app = {
         searchHandle({ state, commit, dispatch }) {
             if (state.searchText.trim() === '') {
                 commit('updateSearchFlag', false)
-            } else {
+            } else if (router.currentRoute.value.name === home.name) {
                 commit('updateSearchFlag', true)
                 dispatch('home/filterDataBySearchText', state.searchText, { root: true })
+            } else if (router.currentRoute.value.name === movie.name) {
+                commit('updateSearchFlag', true)
+                dispatch('movie/filterDataBySearchText', state.searchText, { root: true })
             }
         },
     },

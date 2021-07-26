@@ -18,22 +18,19 @@
                         :width="200"
                         trigger="hover" 
                         v-if="cell.type === 'more'">
-                        <div class="desc-label" 
-                            v-for="label in data.hoverShowLabel"
-                            :key="label"
-                            :style="{ marginRight: `${descLabelMarginRight}px` }">
-                            {{label}}
-                        </div>
+                        <DescLabel  v-for="label in data.hoverShowLabel" 
+                                    :marginRight="descLabelMarginRight" 
+                                    :name="label"
+                                    :key="label">
+                        </DescLabel>
                         <template #reference>
                             <div class="more-label" :style="{ width: `${moreLabelWidth}px` }">
                                 <i class="el-icon-more"></i>
                             </div>
                         </template>
                     </el-popover>
-                    
-                    <div v-else class="desc-label" :style="{ marginRight: `${descLabelMarginRight}px` }">
-                        {{cell.name}}
-                    </div>
+
+                    <DescLabel v-else :marginRight="descLabelMarginRight" :name="cell.name"></DescLabel>
                 </template>
             </div>
             <div class="animation-item-state paddingLeft4">
@@ -51,6 +48,7 @@
 <script>
 import { scoreMap } from './data.js'
 import { ref } from 'vue'
+import DescLabel from './desc-label.vue'
 
 const descLabelMarginRight = 4
 const moreLabelWidth = 20
@@ -59,6 +57,9 @@ const totalScore = 5
 export default {
     name: 'animation-item',
     props: ['data', 'searchFlag', 'listData'],
+    components: {
+        DescLabel,
+    },
     data() {
         return {
             moreLabelWidth,
@@ -243,24 +244,6 @@ export default {
     max-height: 50px;
     font-size: 12px;
     overflow: hidden;
-}
-.desc-label {
-    min-width: 46px;
-    max-width: 100%;
-    height: 22px;
-    line-height: 22px;
-    font-size: 12px;
-    padding: 0 8px;
-    border: 1px solid #f0f0f0;
-    display: inline-block;
-    color: #595959;
-    text-align: center;
-    border-radius: 3px;
-    margin: 0 0 4px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    box-sizing: border-box;
 }
 .more-label {
     height: 16px;

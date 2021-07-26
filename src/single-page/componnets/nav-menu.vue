@@ -12,31 +12,67 @@
                 <el-menu-item index="summary">总结</el-menu-item>
             </el-menu>
         
-            <div class="search-input-wrap">
-                <i class="el-icon-search search-icon"></i>
-                <input  placeholder="请输入剧名" 
-                        @keydown.enter="onEnter" 
-                        type="text" 
-                        class="search-input" 
-                        v-model="searchText">
-            </div>
+            <el-popover placement="bottom-end"
+                        title="高级筛选"
+                        :width="320"
+                        :show-arrow="false"
+                        :offset="5"
+                        ref="popoverRef"
+                        trigger="manual"
+                        v-model:visible="showFilterContent">
+                <template #reference>
+                    <div class="search-input-wrap">
+                        <i class="el-icon-search search-icon"></i>
+                        <input  placeholder="请输入剧名" 
+                                @keydown.enter="onEnter"
+                                @focus="onFocus"
+                                type="text"
+                                ref="searchInput"
+                                class="search-input" 
+                                v-model="searchText">
+                    </div>
+                </template>
+                <div>
+                    <div class="label-wrap">
+                        <DescLabel  v-for="label in searchPopoverData" 
+                                    :marginRight="4" 
+                                    :name="label"
+                                    :key="label" 
+                                    @click="clickLabel(label)">
+                        </DescLabel>
+                    </div>
+                    <div class="popover-footer-wrap">
+                        <el-button size="mini" icon="el-icon-refresh-left" @click="clickResetBtn">重置</el-button>
+                        <el-button size="mini" type="primary" icon="el-icon-search" @click="clickSearchBtn">搜索</el-button>
+                    </div>
+                </div>
+            </el-popover>
         </div>
     </div>
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+import DescLabel from '@/single-page/home/desc-label.vue'
 
 export default {
   	name: 'nav-menu',
+    components: {
+        DescLabel,
+    },
     data() {
         return {
-            
+            showFilterContent: false,
+            popoverEl: null, // 高级筛选面板
+            inputEl: null, // 搜索框
         }
     },
     computed: {
         ...mapState('app', [
             'activeNavIndex',
+        ]),
+        ...mapGetters('app', [
+            'searchPopoverData',
         ]),
         searchText: {
             get() {
@@ -49,6 +85,8 @@ export default {
     },
     mounted() {
         this.initActiveNavIndex()
+        this.popoverEl = this.$refs.popoverRef.$refs.popperRef
+        this.inputEl = this.$refs.searchInput
     },
 	methods: {
         ...mapMutations('app', [
@@ -63,7 +101,38 @@ export default {
             this.updateActiveNavIndex(activeIndex)
 		},
         onEnter() {
+            this.inputEl.blur()
             this.searchHandle()
+            this.hidePopover()
+        },
+        onFocus() {
+            if (this.searchPopoverData.length) {
+                this.showFilterContent = true
+                // 添加隐藏高级筛选的监听器
+                document.addEventListener('click', this.hidePopoverByEl)
+            }
+        },
+        hidePopoverByEl(e) {
+            if (!e.path.includes(this.popoverEl) && !e.path.includes(this.inputEl)) {
+                this.hidePopover()
+            }
+        },
+        hidePopover() {
+            this.showFilterContent = false
+            // 移除监听器
+            document.removeEventListener('click', this.hidePopoverByEl)
+        },
+        clickResetBtn() {
+            this.updateInputValue('')
+            this.searchHandle()
+            this.hidePopover()
+        },
+        clickSearchBtn() {
+            this.searchHandle()
+            this.hidePopover()
+        },
+        clickLabel(name) {
+            
         },
 	}
 }
@@ -120,6 +189,19 @@ export default {
     top: 8px;
     color: #C0C4CC;
     font-size: 12px;
+}
+.label-wrap {
+    max-height: 160px;
+    overflow: scroll;
+}
+.label-wrap .desc-label:hover {
+    cursor: pointer;
+    color: #409EFF;
+    border-color: #c6e2ff;
+    background-color: #ecf5ff
+}
+.popover-footer-wrap {
+    text-align: right;
 }
 </style>
 

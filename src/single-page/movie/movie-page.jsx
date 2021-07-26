@@ -1,29 +1,32 @@
-import { defineComponent } from 'vue'
+import { defineComponent, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import data from './data.js'
 import './movie-page.css'
 
 export default defineComponent({
 	name: 'movie-page',
-	props: {
-		msg: String,
-	},
 	setup() {
 		const store = new useStore()
+
+		const getMovieListHandle = () => store.dispatch('movie/getMovieListHandle')
+		onMounted(() => {
+			getMovieListHandle()
+		})
+
 		return {
-			tableData: data,
-			store,
+			mainTopGap: computed(() => store.state.app.mainTopGap),
+			showMovieList: computed(() => store.getters['movie/showMovieList']),
 		}
 	},
 	render() {
-		const outsideHeight = 61 + this.store.state.app.mainTopGap
+		const outsideHeight = 61 + this.mainTopGap
 		const paddingTopAndBottom = 32
 		return (
 			<div class="table-head-class">
 				<el-table   border
+							empty-text={ '暂无数据' }
 							header-cell-style={ {background: '#eef1f6'} }
 							height={ document.documentElement.clientHeight - outsideHeight - paddingTopAndBottom }
-							data={ this.tableData }
+							data={ this.showMovieList }
     						default-sort={ {prop: 'star', order: 'descending'} }>
 					<el-table-column fixed type="index"width="50" align="center"></el-table-column>
 					<el-table-column fixed prop="name" label="名称" width="180"></el-table-column>
