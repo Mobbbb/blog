@@ -19,3 +19,31 @@ export const sortDataByDate = (data) => {
     })
     return newData
 }
+
+export const filterDataByText = (text, data) => {
+    let regStr = ['', ...text.trim().toLowerCase(), ''].join('.*')
+    let reg = new RegExp(regStr)
+    let filterData = data.filter(item => {
+        for (let i = 0; i < item.alias.length; i++) {
+            if (reg.test(item.alias[i])) {
+                return reg.test(item.alias[i].toLowerCase())
+            }
+        }
+        return reg.test(item.name.toLowerCase())
+    })
+
+    return filterData
+}
+
+export const filterDataByLabel = (labelArr, data) => {
+    let filterData = data.filter(item => {
+        for (let i = 0; i < labelArr.length; i++) {
+            if (!item.hoverShowLabel.includes(labelArr[i])) {
+                return false
+            } 
+        }
+        return true
+    })
+
+    return filterData
+}

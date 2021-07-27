@@ -19,6 +19,7 @@
                         :offset="5"
                         ref="popoverRef"
                         trigger="manual"
+                        popper-class="search-input-popover"
                         v-model:visible="showFilterContent">
                 <template #reference>
                     <div class="search-input-wrap">
@@ -32,20 +33,7 @@
                                 v-model="searchText">
                     </div>
                 </template>
-                <div>
-                    <div class="label-wrap">
-                        <DescLabel  v-for="label in searchPopoverData" 
-                                    :marginRight="4" 
-                                    :name="label"
-                                    :key="label" 
-                                    @click="clickLabel(label)">
-                        </DescLabel>
-                    </div>
-                    <div class="popover-footer-wrap">
-                        <el-button size="mini" icon="el-icon-refresh-left" @click="clickResetBtn">重置</el-button>
-                        <el-button size="mini" type="primary" icon="el-icon-search" @click="clickSearchBtn">搜索</el-button>
-                    </div>
-                </div>
+                <PopoverFilter @on-reset="clickResetBtn" @on-search="clickSearchBtn"></PopoverFilter>
             </el-popover>
         </div>
     </div>
@@ -54,11 +42,13 @@
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import DescLabel from '@/single-page/home/desc-label.vue'
+import PopoverFilter from './popover-filter.vue'
 
 export default {
   	name: 'nav-menu',
     components: {
         DescLabel,
+        PopoverFilter,
     },
     data() {
         return {
@@ -72,7 +62,7 @@ export default {
             'activeNavIndex',
         ]),
         ...mapGetters('app', [
-            'searchPopoverData',
+            'popoverFilterConfig',
         ]),
         searchText: {
             get() {
@@ -96,6 +86,7 @@ export default {
         ...mapActions('app', [
             'searchHandle',
             'initActiveNavIndex',
+            'resetFilterHandle',
         ]),
 		handleSelect(activeIndex) {
             this.updateActiveNavIndex(activeIndex)
@@ -106,7 +97,7 @@ export default {
             this.hidePopover()
         },
         onFocus() {
-            if (this.searchPopoverData.length) {
+            if (Object.keys(this.popoverFilterConfig).length) {
                 this.showFilterContent = true
                 // 添加隐藏高级筛选的监听器
                 document.addEventListener('click', this.hidePopoverByEl)
@@ -124,15 +115,13 @@ export default {
         },
         clickResetBtn() {
             this.updateInputValue('')
+            this.resetFilterHandle()
             this.searchHandle()
             this.hidePopover()
         },
         clickSearchBtn() {
             this.searchHandle()
             this.hidePopover()
-        },
-        clickLabel(name) {
-            
         },
 	}
 }
@@ -190,19 +179,6 @@ export default {
     color: #C0C4CC;
     font-size: 12px;
 }
-.label-wrap {
-    max-height: 160px;
-    overflow: scroll;
-}
-.label-wrap .desc-label:hover {
-    cursor: pointer;
-    color: #409EFF;
-    border-color: #c6e2ff;
-    background-color: #ecf5ff
-}
-.popover-footer-wrap {
-    text-align: right;
-}
 </style>
 
 <style>
@@ -212,5 +188,11 @@ export default {
 }
 .el-menu-nav > .el-menu-item:hover{
     background-color: transparent !important;
+}
+.search-input-popover {
+    padding: 12px 0!important;
+}
+.search-input-popover > .el-popover__title {
+    padding: 0 12px;
 }
 </style>

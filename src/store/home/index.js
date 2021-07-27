@@ -1,5 +1,5 @@
 import listData, { months } from '@/single-page/home/data.js'
-import { sortDataByDate } from '@/libs/data-processing'
+import { sortDataByDate, filterDataByText, filterDataByLabel } from '@/libs/data-processing'
 import { deepClone } from '@/libs/util'
 import { ref } from 'vue'
 
@@ -11,7 +11,12 @@ const home = {
             activeMonth: '',
             animationList: [],
             filterSearchTextData: [],
-            allLabelArr: [],
+            filterConfig: {
+                allLabelArr: [],
+            },
+            selectedFilter: {
+                label: [],
+            },
         }
     },
     getters: {
@@ -37,6 +42,16 @@ const home = {
                 return item.years === state.selectedYears && item.month === state.activeMonth
             })
         },
+        hasSelectedFilter(state) {
+            let flag = false
+            Object.keys(state.selectedFilter).forEach(key => {
+                if (Array.isArray(state.selectedFilter[key]) && state.selectedFilter[key].length) {
+                    flag = true
+                }
+            })
+
+            return flag
+        },
     },
     mutations: {
         updateYears(state, value) {
@@ -54,7 +69,19 @@ const home = {
             state.filterSearchTextData = list
         },
         setAllLabelArr(state, data) {
-            state.allLabelArr = data
+            state.filterConfig.allLabelArr = data
+        },
+        resetSelectedFilter(state) {
+            state.selectedFilter = {
+                label: [],
+            }
+        },
+        setSelectedLabel(state, { type, data }) {
+            if (!state.selectedFilter[type].includes(data)) {
+                state.selectedFilter[type].push(data)
+            } else {
+                state.selectedFilter[type].remove(data)
+            }
         },
     },
     actions: {
@@ -91,24 +118,36 @@ const home = {
                 }
                 item.label = labelArr
                 item.hoverShowLabel = ref(hoverShowLabel)
+
                 item._index = index
             })
+            allLabelArr.sort((a, b) => a.length - b.length)
             commit('setAllLabelArr', allLabelArr)
             commit('setAnimationList', _listData)
         },
-        filterDataBySearchText({ state, commit }, text) {
-            let regStr = ['', ...text.trim().toLowerCase(), ''].join('.*')
-            let reg = new RegExp(regStr)
-            let filterData = state.animationList.filter(item => {
-                for (let i = 0; i < item.alias.length; i++) {
-                    if (reg.test(item.alias[i])) {
-                        return reg.test(item.alias[i].toLowerCase())
-                    }
-                }
-                return reg.test(item.name.toLowerCase())
-            })
+        filterDataByConfig({ state, commit }, text) {
+            let filterData = []
+
+            // 按输入框内容进行数据筛选
+            if (text !== '') {
+                filterData = filterDataByText(text, state.animationList)
+            } else if (state.selectedFilter.label.length) {
+                filterData = state.animationList
+            }
+
+            // 过滤勾选的label
+            if (state.selectedFilter.label.length) {
+                filterData = filterDataByLabel(state.selectedFilter.label, filterData)
+            }
+
+            // 排序输出
             filterData = sortDataByDate(filterData)
             commit('setFilterSearchTextData', filterData)
+        },
+        setFilterConfig({ commit }, { type, data }) {
+            if (type === 'label') {
+                commit('setSelectedLabel', { type, data })
+            }
         },
     },
 }

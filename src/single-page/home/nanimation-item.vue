@@ -67,9 +67,11 @@ export default {
         }
     },
     mounted() {
-        this.setCurrentShowListTooltipPrototype()
-        this.computedCurrentShowListScore()
-        this.computedCurrentShowListLabelConfig()
+        this.$nextTick(() => {
+            this.setCurrentShowListTooltipPrototype()
+            this.computedCurrentShowListScore()
+            this.computedCurrentShowListLabelConfig()
+        })
     },
     methods: {
         computedScore(labelArr) {
@@ -185,7 +187,7 @@ export default {
     display: flex;
     width: 33%;
     min-width: 280px;
-    padding-right: 12px;
+    padding-right: 8px;
     margin-bottom: 20px;
     box-sizing: border-box;
     float: left;

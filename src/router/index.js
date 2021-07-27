@@ -31,9 +31,12 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     localStorage.setItem('active-nav-index', to.name)
-    // 清空输入框，重置搜索状态
-    store.commit('app/updateInputValue', '')
-    store.commit('app/updateSearchFlag', false)
+    if (store.state.app.searchFlag) {
+        // 清空输入框，重置搜索状态
+        store.commit('app/updateInputValue', '')
+        store.commit('app/updateSearchFlag', false)
+        store.dispatch('app/resetFilterHandle')
+    }
     next()
 })
 

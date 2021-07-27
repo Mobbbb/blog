@@ -7,6 +7,8 @@ const movie = {
         return {
             movieList: [],
             filterSearchTextData: [],
+            filterConfig: {},
+            selectedFilter: {},
         }
     },
     getters: {
