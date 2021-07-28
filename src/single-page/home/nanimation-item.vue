@@ -46,13 +46,11 @@
 </template>
 
 <script>
-import { scoreMap } from './data.js'
 import { ref } from 'vue'
 import DescLabel from './desc-label.vue'
 
 const descLabelMarginRight = 4
 const moreLabelWidth = 20
-const totalScore = 5
 
 export default {
     name: 'animation-item',
@@ -69,21 +67,10 @@ export default {
     mounted() {
         this.$nextTick(() => {
             this.setCurrentShowListTooltipPrototype()
-            this.computedCurrentShowListScore()
             this.computedCurrentShowListLabelConfig()
         })
     },
     methods: {
-        computedScore(labelArr) {
-            let score = 0
-
-            labelArr.forEach(cell => {
-                let itemScore = scoreMap[cell] || 0
-                score = (score).addScore(itemScore)
-            })
-
-            return score
-        },
         /**
          * @description 标题悬浮是否出现tooltip
          */
@@ -156,26 +143,6 @@ export default {
                 }
                 
                 this.listData[this.data._index].insertLabelStatus = true // 表示当前label的插入加工已处理完毕
-            }
-        },
-        /**
-         * @description 最终分数计算
-         */
-        computedCurrentShowListScore() {
-            // 待评分
-            if (this.data.waitToScore) {
-                this.listData[this.data._index].score = 0
-                return
-            }
-
-            // 根据label、scoreLabel计算分数
-            if (typeof this.data.score === 'undefined') {
-                let initScore = totalScore
-                
-                initScore = initScore.addScore(- this.computedScore(this.data.hoverShowLabel))
-                initScore = initScore.addScore(- this.computedScore(this.data.scoreLabel))
-
-                this.listData[this.data._index].score = ref(initScore)
             }
         },
     }

@@ -1,22 +1,3 @@
-export const months = [
-    {
-        name: '一月',
-        value: '1',
-    },
-    {
-        name: '四月',
-        value: '4',
-    },
-    {
-        name: '七月',
-        value: '7',
-    },
-    {
-        name: '十月',
-        value: '10',
-    },
-]
-
 export const scoreMap = {
     '迟钝男': 0.5,
     '微萎男': 0.2,
@@ -615,15 +596,14 @@ export default [
         name: '埃罗芒阿老师',
         alias: ['情色漫画老师'],
         description: '',
-        label: ['傲娇妹', '日常'],
-        scoreLabel: [''],
-        waitToScore: true,
+        label: ['日常', '妹控', '兄控', '后宫', '傲娇妹'],
+        scoreLabel: ['微萎男', '无实质性结尾'],
         years: '2017',
         month: '4',
         country: '日本',
-        cover: require('@/assets/loading.gif'),
+        cover: require('@/assets/almls.webp'),
         season: '',
-        endProgress: '0',
+        endProgress: '12',
         episodes: '12',
         comment: '',
     },

@@ -100,7 +100,8 @@ export default {
             if (Object.keys(this.popoverFilterConfig).length) {
                 this.showFilterContent = true
                 // 添加隐藏高级筛选的监听器
-                document.addEventListener('click', this.hidePopoverByEl)
+                // click事件会出现误触现象——在弹框内mousedown，并在弹框外mouseup，点击区域会被判定为在弹框之外
+                document.addEventListener('mousedown', this.hidePopoverByEl)
             }
         },
         hidePopoverByEl(e) {
@@ -111,7 +112,7 @@ export default {
         hidePopover() {
             this.showFilterContent = false
             // 移除监听器
-            document.removeEventListener('click', this.hidePopoverByEl)
+            document.removeEventListener('mousedown', this.hidePopoverByEl)
         },
         clickResetBtn() {
             this.updateInputValue('')

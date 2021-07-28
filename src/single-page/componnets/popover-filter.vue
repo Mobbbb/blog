@@ -10,8 +10,16 @@
                         :class="popoverSelectedFilter.label.includes(label) ? 'active-label' : ''">
             </DescLabel>
         </div>
-        <div>
-            <el-slider v-model="value1" :max="5" :step="0.1" :format-tooltip="formatTooltip"></el-slider>
+        <div class="rate-wrap" v-if="popoverFilterConfig.rateScore">
+            <div class="filter-title paddingBottom0"># 评分</div>
+            <div class="slider-bar-wrap">
+                <el-slider  range
+                            v-model="rateScore" 
+                            :max="popoverFilterConfig.rateScore.max"
+                            :step="popoverFilterConfig.rateScore.step" 
+                            :format-tooltip="popoverFilterConfig.rateScore.formatTooltip">
+                </el-slider>
+            </div>
         </div>
         <div class="popover-footer-wrap">
             <el-button size="mini" icon="el-icon-refresh-left" @click="clickResetBtn">重置</el-button>
@@ -39,6 +47,17 @@ export default {
             'popoverFilterConfig',
             'popoverSelectedFilter',
         ]),
+        rateScore: {
+            get() {
+                return this.popoverSelectedFilter.rateScore
+            },
+            set(value) {
+                this.setFilterHandle({
+                    type: 'rateScore',
+                    data: value,
+                })
+            },
+        },
     },
 	methods: {
         ...mapActions('app', [
@@ -55,13 +74,6 @@ export default {
                 type: 'label',
                 data: name,
             })
-        },
-        formatTooltip(value) {
-            if (value < 3.5) {
-                return '较差: ' + value
-            } else {
-                return '较好: ' + value
-            }
         },
 	}
 }
@@ -94,8 +106,17 @@ export default {
     font-weight: 700;
     padding: 0 0 8px 2px;
 }
+.rate-wrap {
+    padding: 0 12px;
+}
+.slider-bar-wrap {
+    padding: 0 4px;
+}
 .popover-footer-wrap {
     text-align: right;
     padding: 0 12px;
+}
+.paddingBottom0 {
+    padding-bottom: 0;
 }
 </style>

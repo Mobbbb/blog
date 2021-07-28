@@ -1,21 +1,33 @@
-import listData, { months } from '@/single-page/home/data.js'
-import { sortDataByDate, filterDataByText, filterDataByLabel } from '@/libs/data-processing'
+import listData from '@/single-page/home/data.js'
+import { months, sortListConfig } from '@/config/constant.js'
+import { 
+    initHomListData,
+    sortDataByDate,
+    sortFilterDataByScore,
+    filterDataByText, 
+    filterDataByLabel, 
+    filterDataByRateScore,
+    homeRateScoreConfig,
+    homeTotalScore,
+} from '@/libs/data-processing'
 import { deepClone } from '@/libs/util'
-import { ref } from 'vue'
 
 const home = {
     namespaced: true,
     state() {
         return {
+            selectedSortType: '',
             selectedYears: '',
             activeMonth: '',
             animationList: [],
             filterSearchTextData: [],
-            filterConfig: {
+            filterConfig: { // 首页高级筛选面板的配置
                 allLabelArr: [],
+                rateScore: homeRateScoreConfig,
             },
-            selectedFilter: {
+            selectedFilter: { // 首页高级筛选的选中项
                 label: [],
+                rateScore: [0, homeTotalScore],
             },
         }
     },
@@ -43,17 +55,14 @@ const home = {
             })
         },
         hasSelectedFilter(state) {
-            let flag = false
-            Object.keys(state.selectedFilter).forEach(key => {
-                if (Array.isArray(state.selectedFilter[key]) && state.selectedFilter[key].length) {
-                    flag = true
-                }
-            })
-
-            return flag
+            return state.selectedFilter.label.length 
+                || (state.selectedFilter.rateScore[0] !== 0 || state.selectedFilter.rateScore[1] !== homeTotalScore)
         },
     },
     mutations: {
+        updateSelectedSortType(state, value) {
+            state.selectedSortType = value
+        },
         updateYears(state, value) {
             state.selectedYears = value
             localStorage.setItem('pick-years', value)
@@ -68,12 +77,16 @@ const home = {
         setFilterSearchTextData(state, list) {
             state.filterSearchTextData = list
         },
+        sortFilterDataByScore(state) {
+            state.filterSearchTextData.sort((a, b) => b.score - a.score)
+        },
         setAllLabelArr(state, data) {
             state.filterConfig.allLabelArr = data
         },
         resetSelectedFilter(state) {
             state.selectedFilter = {
                 label: [],
+                rateScore: [0, homeTotalScore],
             }
         },
         setSelectedLabel(state, { type, data }) {
@@ -83,11 +96,15 @@ const home = {
                 state.selectedFilter[type].remove(data)
             }
         },
+        setSelectedRateScore(state, { type, data }) {
+            state.selectedFilter[type] = data
+        },
     },
     actions: {
-        initDate({ commit }) {
-            const years = (new Date()).getFullYear().toString()
-            commit('updateYears', localStorage.getItem('pick-years') || years)
+        initHomeHeader({ commit }) {
+            const initYears = '2021'
+            commit('updateSelectedSortType', sortListConfig[0].value)
+            commit('updateYears', localStorage.getItem('pick-years') || initYears)
             commit('updateActiveMonth', localStorage.getItem('pick-month') || months[0].value)
         },
         changeYearsHandle({ state, getters, commit }, value) {
@@ -100,30 +117,10 @@ const home = {
             commit('updateYears', years)
         },
         getAnimationHandle({ commit }) {
-            const allLabelArr = []
-            const _listData = deepClone(listData)
-            _listData.forEach((item, index) => {
-                let labelArr = [], hoverShowLabel = []
-                item.label.forEach(name => {
-                    if (!allLabelArr.includes(name)) {
-                        allLabelArr.push(name)
-                    }
-                    labelArr.push({ name })
-                    hoverShowLabel.push(name)
-                })
-
-                item.showName = item.name
-                if (item.season) {
-                    item.showName += ' ' + item.season
-                }
-                item.label = labelArr
-                item.hoverShowLabel = ref(hoverShowLabel)
-
-                item._index = index
-            })
-            allLabelArr.sort((a, b) => a.length - b.length)
+            const { data, allLabelArr } = initHomListData(deepClone(listData))
+            
             commit('setAllLabelArr', allLabelArr)
-            commit('setAnimationList', _listData)
+            commit('setAnimationList', data)
         },
         filterDataByConfig({ state, commit }, text) {
             let filterData = []
@@ -131,7 +128,7 @@ const home = {
             // 按输入框内容进行数据筛选
             if (text !== '') {
                 filterData = filterDataByText(text, state.animationList)
-            } else if (state.selectedFilter.label.length) {
+            } else {
                 filterData = state.animationList
             }
 
@@ -140,13 +137,33 @@ const home = {
                 filterData = filterDataByLabel(state.selectedFilter.label, filterData)
             }
 
-            // 排序输出
-            filterData = sortDataByDate(filterData)
+            // 过滤评分
+            if (state.selectedFilter.rateScore[0] !== 0 || state.selectedFilter.rateScore[1] !== homeTotalScore) {
+                filterData = filterDataByRateScore(state.selectedFilter.rateScore, filterData)
+            }
+
+            // 按日期排序输出
+            if (state.selectedSortType === sortListConfig[0].value) {
+                filterData = sortDataByDate(filterData)
+            } else if (state.selectedSortType === sortListConfig[1].value) {
+                sortFilterDataByScore(filterData)
+            }
             commit('setFilterSearchTextData', filterData)
         },
         setFilterConfig({ commit }, { type, data }) {
             if (type === 'label') {
                 commit('setSelectedLabel', { type, data })
+            } else if (type === 'rateScore') {
+                commit('setSelectedRateScore', { type, data })
+            }
+        },
+        sortDataBySortType({ state, commit }) {
+            let sortData = []
+            if (state.selectedSortType === sortListConfig[0].value) {
+                sortData = sortDataByDate(state.filterSearchTextData)
+                commit('setFilterSearchTextData', sortData)
+            } else if (state.selectedSortType === sortListConfig[1].value) {
+                commit('sortFilterDataByScore')
             }
         },
     },

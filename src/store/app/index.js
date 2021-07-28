@@ -1,4 +1,4 @@
-import router, { home, movie } from '@/router'
+import router from '@/router'
 
 const app = {
     namespaced: true,
@@ -17,20 +17,12 @@ const app = {
             }
         },
         popoverFilterConfig(state, getters, rootState) { // 高级筛选面板的选项配置
-            if (router.currentRoute.value.name === home.name) {
-                return rootState.home.filterConfig
-            } else if (router.currentRoute.value.name === movie.name) {
-                return rootState.movie.filterConfig
-            }
-            return {}
+            const { name } = router.currentRoute.value
+            return rootState[name] && rootState[name].filterConfig || {}
         },
         popoverSelectedFilter(state, getters, rootState) { // 选中的高级筛选集合
-            if (router.currentRoute.value.name === home.name) {
-                return rootState.home.selectedFilter
-            } else if (router.currentRoute.value.name === movie.name) {
-                return rootState.movie.selectedFilter
-            }
-            return {}
+            const { name } = router.currentRoute.value
+            return rootState[name] && rootState[name].selectedFilter || {}
         },
     },
     mutations: {
@@ -51,25 +43,21 @@ const app = {
             commit('updateActiveNavIndex', navIndex)
         },
         searchHandle({ state, rootGetters, commit, dispatch }) {
-            if (router.currentRoute.value.name === home.name) {
-                if (state.searchText.trim() === '' && !rootGetters['home/hasSelectedFilter']) {
-                    commit('updateSearchFlag', false)
-                } else {
-                    commit('updateSearchFlag', true)
-                    dispatch('home/filterDataByConfig', state.searchText, { root: true })
-                }
-            } else if (router.currentRoute.value.name === movie.name) {
+            const { name } = router.currentRoute.value
+            if (state.searchText.trim() === '' && !rootGetters[`${name}/hasSelectedFilter`]) {
+                commit('updateSearchFlag', false)
+            } else {
                 commit('updateSearchFlag', true)
-                dispatch('movie/filterDataBySearchText', state.searchText, { root: true })
+                dispatch(`${name}/filterDataByConfig`, state.searchText, { root: true })
             }
         },
         setFilterHandle({ dispatch }, { type, data }) {
-            if (router.currentRoute.value.name === home.name) {
-                dispatch('home/setFilterConfig', { type, data }, { root: true })
-            }
+            const { name } = router.currentRoute.value
+            dispatch(`${name}/setFilterConfig`, { type, data }, { root: true })
         },
         resetFilterHandle({ commit }) {
-            commit('home/resetSelectedFilter', {}, { root: true })
+            const { name } = router.currentRoute.value
+            commit(`${name}/resetSelectedFilter`, {}, { root: true })
         },
     },
 }
