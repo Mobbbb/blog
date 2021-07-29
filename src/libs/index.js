@@ -16,7 +16,7 @@ function accAdd(arg1, arg2) {
 }
 
 Number.prototype.addScore = function(arg) {
-    return accAdd(arg, this) < 0 ? 0 : accAdd(arg, this)
+    return accAdd(arg, this)
 }
 
 Array.prototype.indexOf = function(val) { 

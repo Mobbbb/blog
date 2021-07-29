@@ -15,3 +15,33 @@ export const deepClone = function(obj) {
     }
     return newObj
 }
+
+/**
+ * @description 降序 3,2,1
+ * @param {String} key 
+ * @returns 
+ */
+export const descendingOrder = (key = '') => {
+    return function (a, b) {
+        if (key) {
+            return b[key] - a[key]
+        } else {
+            return b - a
+        }
+    }
+}
+
+/**
+ * @description 升序 1,2,3
+ * @param {String} key 
+ * @returns 
+ */
+export const ascendingOrder = (key = '') => {
+    return function (a, b) {
+        if (key) {
+            return a[key] - b[key]
+        } else {
+            return a - b
+        }
+    }
+}

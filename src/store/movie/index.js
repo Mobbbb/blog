@@ -1,6 +1,7 @@
 import listData from '@/single-page/movie/data.js'
 import { deepClone } from '@/libs/util'
-import { filterDataByRateScore, filterDataByText, movieRateScoreConfig, movieTotalScore } from '@/libs/data-processing'
+import { filterDataByRateScore, filterDataByText, movieTotalScore } from '@/libs/data-processing'
+import { movieRateScoreConfig } from '@/config/constant.js'
 
 const movie = {
     namespaced: true,
@@ -24,8 +25,11 @@ const movie = {
                 return state.movieList
             }
         },
-        hasSelectedFilter(state) {
-            return state.selectedFilter.rateScore[0] !== 0 || state.selectedFilter.rateScore[1] !== movieTotalScore
+        hasSelectedRateScore(state) {
+            return state.selectedFilter.rateScore[0] !== 0 || state.selectedFilter.rateScore[1] !== homeTotalScore
+        },
+        hasSelectedFilter(state, getters) {
+            return getters.hasSelectedRateScore
         },
     },
     mutations: {
@@ -52,7 +56,7 @@ const movie = {
         filterDataByConfig() {
 
         },
-        filterDataByConfig({ state, commit }, text) {
+        filterDataByConfig({ state, getters, commit }, text) {
             let filterData = []
 
             // 按输入框内容进行数据筛选
@@ -63,7 +67,7 @@ const movie = {
             }
 
             // 过滤评分
-            if (state.selectedFilter.rateScore[0] !== 0 || state.selectedFilter.rateScore[1] !== movieTotalScore) {
+            if (getters.hasSelectedRateScore) {
                 filterData = filterDataByRateScore(state.selectedFilter.rateScore, filterData)
             }
             

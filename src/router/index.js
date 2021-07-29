@@ -29,15 +29,14 @@ const router = createRouter({
     routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.afterEach((to, from, failure) => {
     localStorage.setItem('active-nav-index', to.name)
     if (store.state.app.searchFlag) {
         // 清空输入框，重置搜索状态
         store.commit('app/updateInputValue', '')
         store.commit('app/updateSearchFlag', false)
-        store.dispatch('app/resetFilterHandle')
+        // store.dispatch('app/resetFilterHandle')
     }
-    next()
 })
 
 export default router

@@ -1,16 +1,15 @@
 import listData from '@/single-page/home/data.js'
-import { months, sortListConfig } from '@/config/constant.js'
+import { sortListConfig, homeRateScoreConfig, January, dateType, scoreType } from '@/config/constant.js'
 import { 
     initHomListData,
-    sortDataByDate,
-    sortFilterDataByScore,
+    sortDataByDateHandle,
+    sortDataByScoreHandle,
     filterDataByText, 
     filterDataByLabel, 
     filterDataByRateScore,
-    homeRateScoreConfig,
     homeTotalScore,
 } from '@/libs/data-processing'
-import { deepClone } from '@/libs/util'
+import { deepClone, ascendingOrder } from '@/libs/util'
 
 const home = {
     namespaced: true,
@@ -39,7 +38,7 @@ const home = {
                     availableYears.push(item.years)
                 }
             })
-            availableYears.sort((a, b) => a - b)
+            availableYears.sort(ascendingOrder())
             return availableYears
         },
         showAnimationList(state, getters, rootState) {
@@ -54,9 +53,11 @@ const home = {
                 return item.years === state.selectedYears && item.month === state.activeMonth
             })
         },
-        hasSelectedFilter(state) {
-            return state.selectedFilter.label.length 
-                || (state.selectedFilter.rateScore[0] !== 0 || state.selectedFilter.rateScore[1] !== homeTotalScore)
+        hasSelectedRateScore(state) {
+            return state.selectedFilter.rateScore[0] !== 0 || state.selectedFilter.rateScore[1] !== homeTotalScore
+        },
+        hasSelectedFilter(state, getters) {
+            return state.selectedFilter.label.length || getters.hasSelectedRateScore
         },
     },
     mutations: {
@@ -77,8 +78,16 @@ const home = {
         setFilterSearchTextData(state, list) {
             state.filterSearchTextData = list
         },
-        sortFilterDataByScore(state) {
-            state.filterSearchTextData.sort((a, b) => b.score - a.score)
+        sortFilterDataByScore(state, data = []) {
+            if (data.length) {
+                state.filterSearchTextData = sortDataByScoreHandle(data)
+            } else {
+                sortDataByScoreHandle(state.filterSearchTextData)
+            }
+        },
+        sortFilterDataByDate(state, data = []) {
+            let sortData = data.length ? data : state.filterSearchTextData
+            state.filterSearchTextData = sortDataByDateHandle(sortData)
         },
         setAllLabelArr(state, data) {
             state.filterConfig.allLabelArr = data
@@ -105,7 +114,7 @@ const home = {
             const initYears = '2021'
             commit('updateSelectedSortType', sortListConfig[0].value)
             commit('updateYears', localStorage.getItem('pick-years') || initYears)
-            commit('updateActiveMonth', localStorage.getItem('pick-month') || months[0].value)
+            commit('updateActiveMonth', localStorage.getItem('pick-month') || January.value)
         },
         changeYearsHandle({ state, getters, commit }, value) {
             let years = ''
@@ -122,7 +131,7 @@ const home = {
             commit('setAllLabelArr', allLabelArr)
             commit('setAnimationList', data)
         },
-        filterDataByConfig({ state, commit }, text) {
+        filterDataByConfig({ state, getters, dispatch }, text) {
             let filterData = []
 
             // 按输入框内容进行数据筛选
@@ -138,17 +147,12 @@ const home = {
             }
 
             // 过滤评分
-            if (state.selectedFilter.rateScore[0] !== 0 || state.selectedFilter.rateScore[1] !== homeTotalScore) {
+            if (getters.hasSelectedRateScore) {
                 filterData = filterDataByRateScore(state.selectedFilter.rateScore, filterData)
             }
 
-            // 按日期排序输出
-            if (state.selectedSortType === sortListConfig[0].value) {
-                filterData = sortDataByDate(filterData)
-            } else if (state.selectedSortType === sortListConfig[1].value) {
-                sortFilterDataByScore(filterData)
-            }
-            commit('setFilterSearchTextData', filterData)
+            // 按默认排序方式输出
+            dispatch('sortDataBySortType', filterData)
         },
         setFilterConfig({ commit }, { type, data }) {
             if (type === 'label') {
@@ -157,13 +161,18 @@ const home = {
                 commit('setSelectedRateScore', { type, data })
             }
         },
-        sortDataBySortType({ state, commit }) {
-            let sortData = []
-            if (state.selectedSortType === sortListConfig[0].value) {
-                sortData = sortDataByDate(state.filterSearchTextData)
-                commit('setFilterSearchTextData', sortData)
-            } else if (state.selectedSortType === sortListConfig[1].value) {
-                commit('sortFilterDataByScore')
+        /**
+         * @description 若入参filterData不为空，则按filterData排序，否则对state原始数据进行排序
+         * @param {'*'} param store
+         * @param {*} filterData
+         */
+        sortDataBySortType({ state, commit }, filterData = []) {
+            let sortData = filterData
+            
+            if (state.selectedSortType === dateType.value) {
+                commit('sortFilterDataByDate', sortData)
+            } else if (state.selectedSortType === scoreType.value) {
+                commit('sortFilterDataByScore', sortData)
             }
         },
     },
