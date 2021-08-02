@@ -1,5 +1,6 @@
 import { scoreMap } from '@/single-page/home/data.js'
 import { descendingOrder, ascendingOrder } from './util'
+import { burstScore, minusScore } from '@/config/constant'
 
 export const homeTotalScore = 5
 export const movieTotalScore = 10
@@ -120,6 +121,7 @@ export const filterDataByText = (text, data) => {
 }
 
 export const filterDataByLabel = (labelArr, data) => {
+    // 取子集
     let filterData = data.filter(item => {
         for (let i = 0; i < labelArr.length; i++) {
             if (!item.hoverShowLabel.includes(labelArr[i])) {
@@ -128,6 +130,20 @@ export const filterDataByLabel = (labelArr, data) => {
         }
         return true
     })
+
+    /* 取交集不为空
+    const filterMap = {}, filterData = []
+    for (let i = 0; i < labelArr.length; i++) {
+        for (let j = 0; j < data.length; j++) {
+            if (data[j].hoverShowLabel.includes(labelArr[i])) {
+                filterMap[data[j]._index] = data[j]
+            }
+        }
+    }
+    Object.keys(filterMap).forEach(key => {
+        filterData.push(filterMap[key])
+    })
+    */
 
     return filterData
 }
@@ -138,4 +154,24 @@ export const filterDataByRateScore = (score, data) => {
     })
 
     return filterData
+}
+
+export const filterDataByHideScore = (scoreArr, data) => {
+    if (!scoreArr.length) return data
+    
+    let burstScoreData = [], minusScoreData = []
+    // 筛选破满分
+    if (scoreArr.includes(burstScore.value)) {
+        burstScoreData = data.filter(item => {
+            return item.realScore > homeTotalScore
+        })
+    }
+    // 筛选破负分
+    if (scoreArr.includes(minusScore.value)) {
+        minusScoreData = data.filter(item => {
+            return item.realScore < 0
+        })
+    }
+
+    return [...burstScoreData, ...minusScoreData]
 }

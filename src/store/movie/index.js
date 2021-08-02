@@ -25,11 +25,18 @@ const movie = {
                 return state.movieList
             }
         },
-        hasSelectedRateScore(state) {
-            return state.selectedFilter.rateScore[0] !== 0 || state.selectedFilter.rateScore[1] !== homeTotalScore
+        filterSelectedStatusConfig(state) {
+            const hasSelectedRateScore = state.selectedFilter.rateScore[0] !== 0 
+            || state.selectedFilter.rateScore[1] !== movieTotalScore
+
+            return {
+                hasSelectedRateScore,
+            }
         },
         hasSelectedFilter(state, getters) {
-            return getters.hasSelectedRateScore
+            return Object.keys(getters.filterSelectedStatusConfig)
+                    .filter(key => getters.filterSelectedStatusConfig[key])
+                    .length
         },
     },
     mutations: {
@@ -44,17 +51,20 @@ const movie = {
                 rateScore: [0, movieTotalScore],
             }
         },
-        setSelectedRateScore(state, { type, data }) {
-            state.selectedFilter[type] = data
+        setSelectedRateScore(state, data) {
+            state.selectedFilter.rateScore = data
+        },
+        setSelectedLabel(state, data) {
+            
+        },
+        setSelectedHideScore(state, data) {
+            
         },
     },
     actions: {
         getMovieListHandle({ commit }) {
             const _listData = deepClone(listData)
             commit('setMovieList', _listData)
-        },
-        filterDataByConfig() {
-
         },
         filterDataByConfig({ state, getters, commit }, text) {
             let filterData = []
@@ -67,16 +77,11 @@ const movie = {
             }
 
             // 过滤评分
-            if (getters.hasSelectedRateScore) {
+            if (getters.filterSelectedStatusConfig.hasSelectedRateScore) {
                 filterData = filterDataByRateScore(state.selectedFilter.rateScore, filterData)
             }
             
             commit('setFilterSearchTextData', filterData)
-        },
-        setFilterConfig({ commit }, { type, data }) {
-            if (type === 'rateScore') {
-                commit('setSelectedRateScore', { type, data })
-            }
         },
     },
 }

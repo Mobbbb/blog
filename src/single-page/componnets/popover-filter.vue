@@ -21,6 +21,16 @@
                 </el-slider>
             </div>
         </div>
+        <div class="hide-score-wrap" v-if="popoverFilterConfig.hideScore">
+            <div class="filter-title"># 隐藏分</div>
+            <el-checkbox-group v-model="hideScore">
+                <el-checkbox    v-for="item in popoverFilterConfig.hideScore" 
+                                :key="item" 
+                                :label="item.value">
+                    <span class="checkbox-item">{{item.label}}</span>
+                </el-checkbox>
+            </el-checkbox-group>
+        </div>
         <div class="popover-footer-wrap">
             <el-button size="mini" icon="el-icon-refresh-left" @click="clickResetBtn">重置</el-button>
             <el-button size="mini" type="primary" icon="el-icon-search" @click="clickSearchBtn">搜索</el-button>
@@ -39,7 +49,7 @@ export default {
     },
     data() {
         return {
-            value1: 0,
+            
         }
     },
     computed: {
@@ -53,7 +63,18 @@ export default {
             },
             set(value) {
                 this.setFilterHandle({
-                    type: 'rateScore',
+                    commitName: 'setSelectedRateScore',
+                    data: value,
+                })
+            },
+        },
+        hideScore: {
+            get() {
+                return this.popoverSelectedFilter.hideScore
+            },
+            set(value) {
+                this.setFilterHandle({
+                    commitName: 'setSelectedHideScore',
                     data: value,
                 })
             },
@@ -71,7 +92,7 @@ export default {
         },
         clickLabel(name) {
             this.setFilterHandle({
-                type: 'label',
+                commitName: 'setSelectedLabel',
                 data: name,
             })
         },
@@ -111,6 +132,12 @@ export default {
 }
 .slider-bar-wrap {
     padding: 0 4px;
+}
+.hide-score-wrap {
+    padding: 0 12px 12px 12px;
+}
+.checkbox-item {
+    font-size: 13px;
 }
 .popover-footer-wrap {
     text-align: right;

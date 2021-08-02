@@ -1,5 +1,5 @@
 import listData from '@/single-page/home/data.js'
-import { sortListConfig, homeRateScoreConfig, January, dateType, scoreType } from '@/config/constant.js'
+import { hideScoreConfig, sortListConfig, homeRateScoreConfig, January, dateType, scoreType } from '@/config/constant.js'
 import { 
     initHomListData,
     sortDataByDateHandle,
@@ -7,9 +7,16 @@ import {
     filterDataByText, 
     filterDataByLabel, 
     filterDataByRateScore,
+    filterDataByHideScore,
     homeTotalScore,
 } from '@/libs/data-processing'
 import { deepClone, ascendingOrder } from '@/libs/util'
+
+const initSelectedFilter = {
+    label: [],
+    rateScore: [0, homeTotalScore],
+    hideScore: [],
+}
 
 const home = {
     namespaced: true,
@@ -23,11 +30,9 @@ const home = {
             filterConfig: { // 首页高级筛选面板的配置
                 allLabelArr: [],
                 rateScore: homeRateScoreConfig,
+                hideScore: hideScoreConfig,
             },
-            selectedFilter: { // 首页高级筛选的选中项
-                label: [],
-                rateScore: [0, homeTotalScore],
-            },
+            selectedFilter: deepClone(initSelectedFilter), // 首页高级筛选的选中项
         }
     },
     getters: {
@@ -53,11 +58,20 @@ const home = {
                 return item.years === state.selectedYears && item.month === state.activeMonth
             })
         },
-        hasSelectedRateScore(state) {
-            return state.selectedFilter.rateScore[0] !== 0 || state.selectedFilter.rateScore[1] !== homeTotalScore
+        filterSelectedStatusConfig(state) {
+            const hasSelectedRateScore = state.selectedFilter.rateScore[0] !== 0 
+            || state.selectedFilter.rateScore[1] !== homeTotalScore
+
+            return {
+                hasSelectedLabel: state.selectedFilter.label.length,
+                hasSelectedRateScore,
+                hasSelectedHideScore: state.selectedFilter.hideScore.length,
+            }
         },
         hasSelectedFilter(state, getters) {
-            return state.selectedFilter.label.length || getters.hasSelectedRateScore
+            return Object.keys(getters.filterSelectedStatusConfig)
+                    .filter(key => getters.filterSelectedStatusConfig[key])
+                    .length
         },
     },
     mutations: {
@@ -93,20 +107,20 @@ const home = {
             state.filterConfig.allLabelArr = data
         },
         resetSelectedFilter(state) {
-            state.selectedFilter = {
-                label: [],
-                rateScore: [0, homeTotalScore],
-            }
+            state.selectedFilter = deepClone(initSelectedFilter)
         },
-        setSelectedLabel(state, { type, data }) {
-            if (!state.selectedFilter[type].includes(data)) {
-                state.selectedFilter[type].push(data)
+        setSelectedLabel(state, data) {
+            if (!state.selectedFilter.label.includes(data)) {
+                state.selectedFilter.label.push(data)
             } else {
-                state.selectedFilter[type].remove(data)
+                state.selectedFilter.label.remove(data)
             }
         },
-        setSelectedRateScore(state, { type, data }) {
-            state.selectedFilter[type] = data
+        setSelectedRateScore(state, data) {
+            state.selectedFilter.rateScore = data
+        },
+        setSelectedHideScore(state, data) {
+            state.selectedFilter.hideScore = data
         },
     },
     actions: {
@@ -131,7 +145,12 @@ const home = {
             commit('setAllLabelArr', allLabelArr)
             commit('setAnimationList', data)
         },
-        filterDataByConfig({ state, getters, dispatch }, text) {
+        /**
+         * @description 按筛选条件过滤数据
+         * @param {*} store 
+         * @param {*} text 标题内容
+         */
+        filterDataByConfig({ state, getters, commit, dispatch }, text) {
             let filterData = []
 
             // 按输入框内容进行数据筛选
@@ -142,28 +161,33 @@ const home = {
             }
 
             // 过滤勾选的label
-            if (state.selectedFilter.label.length) {
+            if (getters.filterSelectedStatusConfig.hasSelectedLabel) {
                 filterData = filterDataByLabel(state.selectedFilter.label, filterData)
             }
 
             // 过滤评分
-            if (getters.hasSelectedRateScore) {
+            if (getters.filterSelectedStatusConfig.hasSelectedRateScore) {
                 filterData = filterDataByRateScore(state.selectedFilter.rateScore, filterData)
             }
 
-            // 按默认排序方式输出
-            dispatch('sortDataBySortType', filterData)
-        },
-        setFilterConfig({ commit }, { type, data }) {
-            if (type === 'label') {
-                commit('setSelectedLabel', { type, data })
-            } else if (type === 'rateScore') {
-                commit('setSelectedRateScore', { type, data })
+            // 过滤隐藏分
+            if (getters.filterSelectedStatusConfig.hasSelectedHideScore) {
+                filterData = filterDataByHideScore(state.selectedFilter.hideScore, filterData)
+            }
+
+            if (filterData.length) {
+                // 存在需要输出的数据
+                // 将当前数据按当前排序方式输出
+                dispatch('sortDataBySortType', filterData)
+            } else {
+                // 不存在需要输出的数据
+                // 直接输出为空
+                commit('setFilterSearchTextData', filterData)
             }
         },
         /**
-         * @description 若入参filterData不为空，则按filterData排序，否则对state原始数据进行排序
-         * @param {'*'} param store
+         * @description 若入参不为空，则按入参数据排序输出，否则对当前正在展示的数据进行重新排序
+         * @param {*} store
          * @param {*} filterData
          */
         sortDataBySortType({ state, commit }, filterData = []) {

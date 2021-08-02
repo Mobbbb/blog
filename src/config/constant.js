@@ -62,3 +62,15 @@ export const movieRateScoreConfig = {
         return value
     },
 }
+
+export const burstScore = {
+    label: '破满分',
+    value: '0',
+}
+
+export const minusScore = {
+    label: '破负分',
+    value: '1',
+}
+
+export const hideScoreConfig = [burstScore, minusScore]

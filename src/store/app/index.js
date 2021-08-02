@@ -51,9 +51,9 @@ const app = {
                 dispatch(`${name}/filterDataByConfig`, state.searchText, { root: true })
             }
         },
-        setFilterHandle({ dispatch }, { type, data }) {
+        setFilterHandle({ commit }, { commitName, data }) {
             const { name } = router.currentRoute.value
-            dispatch(`${name}/setFilterConfig`, { type, data }, { root: true })
+            commit(`${name}/${commitName}`, data, { root: true })
         },
         resetFilterHandle({ commit }) {
             const { name } = router.currentRoute.value
