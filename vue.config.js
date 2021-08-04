@@ -23,7 +23,12 @@ module.exports = {
     productionSourceMap: false,
 
     devServer: {
-        // proxy: 'http://a.b.com'
+        proxy: {
+            '/resource': {
+                target: 'http://mobbbb.top',
+                changOrigin: true,
+            },
+        },
     },
 
     configureWebpack: (config) => {

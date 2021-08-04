@@ -1,7 +1,7 @@
 <template>
     <div class="home-wrap">
         <HomeHeader></HomeHeader>
-        <div class="home-content">
+        <div class="home-content" v-loading="isLoading">
             <template v-if="showAnimationList.length">
                 <AnimationItem  :data="item" 
                                 :key="item._index"
@@ -10,7 +10,7 @@
                                 v-for="item in showAnimationList">
                 </AnimationItem>
             </template>
-            <el-empty description="暂无数据" v-else></el-empty>
+            <el-empty :description="isLoading ? ' ' : '暂无数据'" v-else></el-empty>
         </div>
     </div>
 </template>
@@ -29,6 +29,7 @@ export default {
     computed: {
         ...mapState('home', [
             'animationList',
+            'isLoading',
         ]),
         ...mapState('app', [
             'searchFlag',

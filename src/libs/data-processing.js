@@ -1,11 +1,10 @@
-import { scoreMap } from '@/single-page/home/data.js'
 import { descendingOrder, ascendingOrder } from './util'
 import { burstScore, minusScore } from '@/config/constant'
 
 export const homeTotalScore = 5
 export const movieTotalScore = 10
 
-export const initHomListData = (data) => {
+export const initHomListData = (scoreMap, data) => {
     const allLabelArr = []
     data.forEach((item, index) => {
         let labelArr = [], hoverShowLabel = []
@@ -26,7 +25,7 @@ export const initHomListData = (data) => {
         item.hoverShowLabel = hoverShowLabel
 
         item._index = index
-        computedCurrentShowListScore(item, homeTotalScore)
+        computedCurrentShowListScore(item, homeTotalScore, scoreMap)
     })
     allLabelArr.sort(ascendingOrder('length'))
 
@@ -39,7 +38,7 @@ export const initHomListData = (data) => {
 /**
  * @description 最终分数计算
  */
-function computedCurrentShowListScore(item, totalScore) {
+function computedCurrentShowListScore(item, totalScore, scoreMap) {
     // 待评分
     if (item.waitToScore) {
         item.score = 0
@@ -50,8 +49,8 @@ function computedCurrentShowListScore(item, totalScore) {
     if (typeof item.score === 'undefined') {
         let initScore = totalScore
         
-        initScore = initScore.addScore(computedScore(item.hoverShowLabel))
-        initScore = initScore.addScore(computedScore(item.scoreLabel))
+        initScore = initScore.addScore(computedScore(item.hoverShowLabel, scoreMap))
+        initScore = initScore.addScore(computedScore(item.scoreLabel, scoreMap))
         item.realScore = initScore // 保存真实分数
 
         // 展示格式化后的分数
@@ -64,7 +63,7 @@ function computedCurrentShowListScore(item, totalScore) {
 /**
  * @description 分数累加
  */
-function computedScore(labelArr) {
+function computedScore(labelArr, scoreMap) {
     let score = 0
 
     labelArr.forEach(cell => {

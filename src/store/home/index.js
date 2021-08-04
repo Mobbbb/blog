@@ -1,4 +1,3 @@
-import listData from '@/single-page/home/data.js'
 import { hideScoreConfig, sortListConfig, homeRateScoreConfig, January, dateType, scoreType } from '@/config/constant.js'
 import { 
     initHomListData,
@@ -11,6 +10,7 @@ import {
     homeTotalScore,
 } from '@/libs/data-processing'
 import { deepClone, ascendingOrder } from '@/libs/util'
+import { fetchHomeListData, fetchScoreMap } from '@/api/home.js'
 
 const initSelectedFilter = {
     label: [],
@@ -25,6 +25,7 @@ const home = {
             selectedSortType: '',
             selectedYears: '',
             activeMonth: '',
+            isLoading: false,
             animationList: [],
             filterSearchTextData: [],
             filterConfig: { // 首页高级筛选面板的配置
@@ -122,6 +123,9 @@ const home = {
         setSelectedHideScore(state, data) {
             state.selectedFilter.hideScore = data
         },
+        setLoadingStatus(state, status) {
+            state.isLoading = status
+        },
     },
     actions: {
         initHomeHeader({ commit }) {
@@ -139,8 +143,17 @@ const home = {
             })
             commit('updateYears', years)
         },
-        getAnimationHandle({ commit }) {
-            const { data, allLabelArr } = initHomListData(deepClone(listData))
+        async getAnimationHandle({ state, commit }) {
+            if (state.animationList.length) return
+
+            commit('setLoadingStatus', true)
+            // 列表数据
+            let { data: listData } = await fetchHomeListData()
+            // 评分规则
+            let { data: scoreMap } = await fetchScoreMap()
+            commit('setLoadingStatus', false)
+
+            const { data, allLabelArr } = initHomListData(scoreMap, listData)
             
             commit('setAllLabelArr', allLabelArr)
             commit('setAnimationList', data)

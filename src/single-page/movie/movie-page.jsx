@@ -1,4 +1,4 @@
-import { defineComponent, computed, onMounted } from 'vue'
+import { defineComponent, computed, onMounted, onUnmounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import './movie-page.css'
 
@@ -6,15 +6,23 @@ export default defineComponent({
 	name: 'movie-page',
 	setup() {
 		const store = new useStore()
-
+		const clientHeight = ref(document.documentElement.clientHeight)
 		const getMovieListHandle = () => store.dispatch('movie/getMovieListHandle')
+		const onResize = () => clientHeight.value = document.documentElement.clientHeight
+
 		onMounted(() => {
 			getMovieListHandle()
+			window.addEventListener('resize', onResize, false)
+		})
+		onUnmounted(() => {
+			window.removeEventListener('resize', onResize)
 		})
 
 		return {
 			mainTopGap: computed(() => store.state.app.mainTopGap),
+			isLoading: computed(() => store.state.movie.isLoading),
 			showMovieList: computed(() => store.getters['movie/showMovieList']),
+			clientHeight,
 		}
 	},
 	render() {
@@ -23,9 +31,10 @@ export default defineComponent({
 		return (
 			<div class="table-head-class">
 				<el-table   border
-							empty-text={ '暂无数据' }
+							v-loading={ this.isLoading }
+							empty-text={ this.isLoading ? ' ' : '暂无数据' }
 							header-cell-style={ {background: '#eef1f6'} }
-							height={ document.documentElement.clientHeight - outsideHeight - paddingTopAndBottom }
+							height={ this.clientHeight - outsideHeight - paddingTopAndBottom }
 							data={ this.showMovieList }
     						default-sort={ {prop: 'score', order: 'descending'} }>
 					<el-table-column fixed type="index"width="50" align="center"></el-table-column>

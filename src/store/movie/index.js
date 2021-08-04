@@ -1,12 +1,12 @@
-import listData from '@/single-page/movie/data.js'
-import { deepClone } from '@/libs/util'
 import { filterDataByRateScore, filterDataByText, movieTotalScore } from '@/libs/data-processing'
 import { movieRateScoreConfig } from '@/config/constant.js'
+import { fetchMovieListData } from '@/api/movie.js'
 
 const movie = {
     namespaced: true,
     state() {
         return {
+            isLoading: false,
             movieList: [],
             filterSearchTextData: [],
             filterConfig: {
@@ -60,11 +60,19 @@ const movie = {
         setSelectedHideScore(state, data) {
             
         },
+        setLoadingStatus(state, status) {
+            state.isLoading = status
+        },
     },
     actions: {
-        getMovieListHandle({ commit }) {
-            const _listData = deepClone(listData)
-            commit('setMovieList', _listData)
+        async getMovieListHandle({ state, commit }) {
+            if (state.movieList.length) return 
+
+            commit('setLoadingStatus', true)
+            const { data: listData } = await fetchMovieListData()
+            commit('setLoadingStatus', false)
+
+            commit('setMovieList', listData)
         },
         filterDataByConfig({ state, getters, commit }, text) {
             let filterData = []
