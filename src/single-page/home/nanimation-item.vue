@@ -35,9 +35,10 @@
             </div>
             <div class="animation-item-state paddingLeft4">
                 <span v-if="data.endProgress === data.episodes">已看完</span>
+                <span v-else-if="data.waitToScore">观看至{{data.endProgress}}话</span>
                 <span v-else>终止于{{data.endProgress}}话</span>
                 <i></i>
-                <span>共{{data.episodes}}话</span>
+                <span>{{episodes}}</span>
             </div>
             <div v-if="data.waitToScore" class="animation-item-tips paddingLeft4">待评分</div>
             <el-rate v-else :model-value="data.score" disabled show-score text-color="#ff9900"></el-rate>
@@ -63,6 +64,11 @@ export default {
             moreLabelWidth,
             descLabelMarginRight,
         }
+    },
+    computed: {
+        episodes() {
+            return Number.isFinite(this.data.episodes) ? `共${this.data.episodes}话` : '连载中'
+        },
     },
     mounted() {
         this.$nextTick(() => {

@@ -30,7 +30,7 @@ export default {
 
 <style scoped>
 .app-main{
-	background: url('@/assets/bg.jpg');
+	background: url('//mobbbb.top/resource/home-assets/images/bg.jpg');
 	background-size: 100% auto;
 	background-repeat: no-repeat;
 	background-position: 0 61px;
