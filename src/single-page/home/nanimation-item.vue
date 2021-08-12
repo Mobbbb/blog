@@ -67,7 +67,7 @@ export default {
     },
     computed: {
         episodes() {
-            return Number.isFinite(this.data.episodes) ? `共${this.data.episodes}话` : '连载中'
+            return Number.isFinite(Number(this.data.episodes)) ? `共${this.data.episodes}话` : '连载中'
         },
     },
     mounted() {

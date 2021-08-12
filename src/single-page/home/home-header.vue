@@ -136,6 +136,7 @@ export default {
 .home-header-wrap {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     height: 40px;
 }
 .home-header > span{

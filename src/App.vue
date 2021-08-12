@@ -34,18 +34,21 @@ export default {
 	background-size: 100% auto;
 	background-repeat: no-repeat;
 	background-position: 0 61px;
-	padding: 61px 12px 12px 12px;
+	padding: 61px 12px 0 12px;
 	box-sizing: border-box;
 	height: 100%;
 	width: 100%;
 }
 .main-wrap{
 	width: 62%;
-	height: calc(100% - 24px);
+	height: calc(100% - 40px);
 	min-width: 660px;
 	margin: 0 auto;
+	border-top: 8px solid #fff;
+	box-sizing: border-box;
 	background: #fff;
 	box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
-	overflow: scroll;
+	overflow-y: auto;
+	border-radius: 2px;
 }
 </style>
