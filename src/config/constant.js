@@ -74,3 +74,10 @@ export const minusScore = {
 }
 
 export const hideScoreConfig = [burstScore, minusScore]
+
+export const terminationConfig = {
+    label: '排除观看终止项',
+    value: '0',
+}
+
+export const othersCheckConfig = [terminationConfig]

@@ -1,4 +1,8 @@
-import { hideScoreConfig, sortListConfig, homeRateScoreConfig, January, dateType, scoreType } from '@/config/constant.js'
+import {
+    othersCheckConfig,
+    hideScoreConfig, 
+    sortListConfig, 
+    homeRateScoreConfig, January, dateType, scoreType } from '@/config/constant.js'
 import { 
     initHomListData,
     sortDataByDateHandle,
@@ -7,15 +11,25 @@ import {
     filterDataByLabel, 
     filterDataByRateScore,
     filterDataByHideScore,
+    filterDataByOthersCheck,
     homeTotalScore,
 } from '@/libs/data-processing'
 import { deepClone, ascendingOrder } from '@/libs/util'
 import { fetchHomeListData, fetchScoreMap } from '@/api/home.js'
 
+/**
+ * @description 新增筛选项步骤
+ * 1、增加渲染筛选面板的state.filterConfig配置
+ * 2、popover-filter.vue增加对应渲染节点
+ * 3、增加选中数据集合state.selectedFilter的字段配置
+ * 4、更新是否已选中当前选项getters.filterSelectedStatusConfig
+ * 5、在action/filterDataByConfig中增加数据过滤方法
+ */
 const initSelectedFilter = {
     label: [],
     rateScore: [0, homeTotalScore],
     hideScore: [],
+    others: [],
 }
 
 const home = {
@@ -32,6 +46,7 @@ const home = {
                 allLabelArr: [],
                 rateScore: homeRateScoreConfig,
                 hideScore: hideScoreConfig,
+                others: othersCheckConfig,
             },
             selectedFilter: deepClone(initSelectedFilter), // 首页高级筛选的选中项
         }
@@ -67,6 +82,7 @@ const home = {
                 hasSelectedLabel: state.selectedFilter.label.length,
                 hasSelectedRateScore,
                 hasSelectedHideScore: state.selectedFilter.hideScore.length,
+                hasSelectedOthers: state.selectedFilter.others.length,
             }
         },
         hasSelectedFilter(state, getters) {
@@ -122,6 +138,9 @@ const home = {
         },
         setSelectedHideScore(state, data) {
             state.selectedFilter.hideScore = data
+        },
+        setSelectedOthers(state, data) {
+            state.selectedFilter.others = data
         },
         setLoadingStatus(state, status) {
             state.isLoading = status
@@ -186,6 +205,11 @@ const home = {
             // 过滤隐藏分
             if (getters.filterSelectedStatusConfig.hasSelectedHideScore) {
                 filterData = filterDataByHideScore(state.selectedFilter.hideScore, filterData)
+            }
+
+            // 过滤其他筛选项
+            if (getters.filterSelectedStatusConfig.hasSelectedOthers) {
+                filterData = filterDataByOthersCheck(state.selectedFilter.others, filterData)
             }
 
             if (filterData.length) {

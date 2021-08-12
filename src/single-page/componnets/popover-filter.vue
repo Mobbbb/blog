@@ -2,15 +2,17 @@
     <div class="popover-content">
         <div class="label-wrap" v-if="popoverFilterConfig.allLabelArr">
             <div class="filter-title"># 标签</div>
-            <DescLabel  v-for="label in popoverFilterConfig.allLabelArr" 
-                        :marginRight="4" 
-                        :name="label"
-                        :key="label" 
-                        @click="clickLabel(label)"
-                        :class="popoverSelectedFilter.label.includes(label) ? 'active-label' : ''">
-            </DescLabel>
+            <div class="label-item-wrap">
+                <DescLabel  v-for="label in popoverFilterConfig.allLabelArr" 
+                            :marginRight="4" 
+                            :name="label"
+                            :key="label" 
+                            @click="clickLabel(label)"
+                            :class="popoverSelectedFilter.label.includes(label) ? 'active-label' : ''">
+                </DescLabel>
+            </div>
         </div>
-        <div class="rate-wrap" v-if="popoverFilterConfig.rateScore">
+        <div class="padding12 paddingTop0 paddingBottom0" v-if="popoverFilterConfig.rateScore">
             <div class="filter-title paddingBottom0"># 评分</div>
             <div class="slider-bar-wrap">
                 <el-slider  range
@@ -21,10 +23,20 @@
                 </el-slider>
             </div>
         </div>
-        <div class="hide-score-wrap" v-if="popoverFilterConfig.hideScore">
+        <div class="padding12 paddingTop0" v-if="popoverFilterConfig.hideScore">
             <div class="filter-title"># 隐藏分</div>
             <el-checkbox-group v-model="hideScore">
                 <el-checkbox    v-for="item in popoverFilterConfig.hideScore" 
+                                :key="item" 
+                                :label="item.value">
+                    <span class="checkbox-item">{{item.label}}</span>
+                </el-checkbox>
+            </el-checkbox-group>
+        </div>
+        <div class="padding12 paddingTop0" v-if="popoverFilterConfig.others">
+            <div class="filter-title"># 其他</div>
+            <el-checkbox-group v-model="others">
+                <el-checkbox    v-for="item in popoverFilterConfig.others" 
                                 :key="item" 
                                 :label="item.value">
                     <span class="checkbox-item">{{item.label}}</span>
@@ -79,6 +91,17 @@ export default {
                 })
             },
         },
+        others: {
+            get() {
+                return this.popoverSelectedFilter.others
+            },
+            set(value) {
+                this.setFilterHandle({
+                    commitName: 'setSelectedOthers',
+                    data: value,
+                })
+            },
+        },
     },
 	methods: {
         ...mapActions('app', [
@@ -102,8 +125,6 @@ export default {
 
 <style scoped>
 .label-wrap {
-    max-height: 160px;
-    overflow: scroll;
     padding-left: 12px;
 }
 .label-wrap .desc-label:hover {
@@ -122,19 +143,17 @@ export default {
     border-color: #66b1ff;
     color: #fff;
 }
+.label-item-wrap {
+    overflow: scroll;
+    max-height: 135px;
+}
 .filter-title {
     font-size: 12px;
     font-weight: 700;
     padding: 0 0 8px 2px;
 }
-.rate-wrap {
-    padding: 0 12px;
-}
 .slider-bar-wrap {
     padding: 0 4px;
-}
-.hide-score-wrap {
-    padding: 0 12px 12px 12px;
 }
 .checkbox-item {
     font-size: 13px;
@@ -142,6 +161,13 @@ export default {
 .popover-footer-wrap {
     text-align: right;
     padding: 0 12px;
+}
+
+.padding12 {
+    padding: 12px;
+}
+.paddingTop0 {
+    padding-top: 0;
 }
 .paddingBottom0 {
     padding-bottom: 0;

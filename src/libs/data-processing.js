@@ -1,5 +1,5 @@
 import { descendingOrder, ascendingOrder } from './util'
-import { burstScore, minusScore } from '@/config/constant'
+import { burstScore, minusScore, terminationConfig } from '@/config/constant'
 
 export const homeTotalScore = 5
 export const movieTotalScore = 10
@@ -173,4 +173,21 @@ export const filterDataByHideScore = (scoreArr, data) => {
     }
 
     return [...burstScoreData, ...minusScoreData]
+}
+
+export const filterDataByOthersCheck = (checkArr, data) => {
+    let result = []
+
+    // 过滤观看终止项
+    if (checkArr.includes(terminationConfig.value)) {
+        result = excludeTerminationItem(data)
+    }
+
+    return result
+}
+
+export const excludeTerminationItem = (data) => {
+    return data.filter(item => {
+        return item.endProgress === item.episodes && !item.waitToScore
+    })
 }
