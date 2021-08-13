@@ -44,7 +44,6 @@ export default {
 	height: calc(100% - 40px);
 	min-width: 660px;
 	margin: 0 auto;
-	border-top: 8px solid #fff;
 	box-sizing: border-box;
 	background: #fff;
 	box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);

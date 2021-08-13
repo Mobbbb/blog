@@ -54,6 +54,10 @@ export default {
     background: #fff;
     padding: 0 20px;
     position: relative;
+    border-top: 8px solid #fff;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 .home-content {
     padding: 20px 0 0 20px;

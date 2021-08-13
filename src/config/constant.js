@@ -81,3 +81,5 @@ export const terminationConfig = {
 }
 
 export const othersCheckConfig = [terminationConfig]
+
+export const textTypeMap = ['text', 'code']

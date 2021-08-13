@@ -1,10 +1,10 @@
 import { descendingOrder, ascendingOrder } from './util'
-import { burstScore, minusScore, terminationConfig } from '@/config/constant'
+import { burstScore, minusScore, terminationConfig, textTypeMap } from '@/config/constant'
 
 export const homeTotalScore = 5
 export const movieTotalScore = 10
 
-export const initHomListData = (scoreMap, data) => {
+export const initHomeListData = (scoreMap, data) => {
     const allLabelArr = []
     data.forEach((item, index) => {
         let labelArr = [], hoverShowLabel = []
@@ -189,5 +189,18 @@ export const filterDataByOthersCheck = (checkArr, data) => {
 export const excludeTerminationItem = (data) => {
     return data.filter(item => {
         return item.endProgress === item.episodes && !item.waitToScore
+    })
+}
+
+export const initSummaryListData = (data) => {
+    data.forEach((item, index) => {
+        item.ellipsisContent = ''
+        item._index = index
+        for (let i = 0; i < item.content.length; i++) {
+            if (textTypeMap.includes(item.content[i].type)) {
+                item.ellipsisContent = item.content[i].value.substring(0, 200)
+                break
+            }
+        }
     })
 }

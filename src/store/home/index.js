@@ -4,7 +4,7 @@ import {
     sortListConfig, 
     homeRateScoreConfig, January, dateType, scoreType } from '@/config/constant.js'
 import { 
-    initHomListData,
+    initHomeListData,
     sortDataByDateHandle,
     sortDataByScoreHandle,
     filterDataByText, 
@@ -172,7 +172,7 @@ const home = {
             let { data: scoreMap } = await fetchScoreMap()
             commit('setLoadingStatus', false)
 
-            const { data, allLabelArr } = initHomListData(scoreMap, listData)
+            const { data, allLabelArr } = initHomeListData(scoreMap, listData)
             
             commit('setAllLabelArr', allLabelArr)
             commit('setAnimationList', data)
