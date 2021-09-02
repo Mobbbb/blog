@@ -105,15 +105,18 @@ export const filterDataByText = (text, data) => {
     let regStr = ['', ...text.trim().toLowerCase(), ''].join('.*')
     let reg = new RegExp(regStr)
     let filterData = data.filter(item => {
+        let nameTestStatus = reg.test(item.name.toLowerCase()) // 输入abc，匹配abc、abcdefg...
+        || text.trim().toLowerCase().indexOf(item.name.toLowerCase()) > -1 // 输入框abc，匹配abc、ab、bc、a、b、c
+        
         if (item.alias) {
             for (let i = 0; i < item.alias.length; i++) {
-                if (reg.test(item.alias[i])) {
-                    return reg.test(item.alias[i].toLowerCase())
-                }
+                return reg.test(item.alias[i].toLowerCase())
+                || text.trim().toLowerCase().indexOf(item.alias[i].toLowerCase()) > -1
+                || nameTestStatus
             }
         }
         
-        return reg.test(item.name.toLowerCase())
+        return nameTestStatus
     })
 
     return filterData
