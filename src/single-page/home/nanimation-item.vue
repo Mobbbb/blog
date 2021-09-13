@@ -35,7 +35,7 @@
             </div>
             <div class="animation-item-state paddingLeft4">
                 <span v-if="data.endProgress === data.episodes">已看完</span>
-                <span v-else-if="data.waitToScore">观看至{{data.endProgress}}话</span>
+                <span v-else-if="data.waitToScore || data.watching">观看至{{data.endProgress}}话</span>
                 <span v-else>终止于{{data.endProgress}}话</span>
                 <i></i>
                 <span>{{episodes}}</span>
@@ -216,7 +216,7 @@ export default {
 }
 .desc-label-wrap {
     margin-bottom: 4px;
-    max-height: 50px;
+    max-height: 52px;
     font-size: 12px;
     overflow: hidden;
 }
