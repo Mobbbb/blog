@@ -1,5 +1,5 @@
 'use strict';
-const name = 'Blog';
+const name = 'Mobbbb';
 const path = require('path');
 const resourceConfig = require('./src/config/resource.js');
 
