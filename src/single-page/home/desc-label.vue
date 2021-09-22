@@ -16,10 +16,9 @@ export default {
 .desc-label {
     min-width: 46px;
     max-width: 100%;
-    height: 22px;
-    line-height: 22px;
+    line-height: normal;
     font-size: 12px;
-    padding: 0 8px;
+    padding: 2px 8px;
     border: 1px solid #f0f0f0;
     display: inline-block;
     color: #595959;
