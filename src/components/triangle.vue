@@ -12,7 +12,7 @@ export default {
 
 <style scoped>
 .triangle-icon {
-    border: 5px solid #937676;
+    border: 5px solid #c5c8cf;
     border-top-color: transparent;
     border-left-color: transparent;
     border-bottom-color: transparent;
