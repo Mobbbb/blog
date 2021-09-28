@@ -19,7 +19,7 @@ export default defineComponent({
 		})
 
 		return {
-			mainTopGap: computed(() => store.state.app.mainTopGap),
+			mainTopGap: computed(() => store.state.app.mainGap[0]),
 			isLoading: computed(() => store.state.movie.isLoading),
 			showMovieList: computed(() => store.getters['movie/showMovieList']),
 			clientHeight,

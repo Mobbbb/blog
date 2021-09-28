@@ -41,7 +41,7 @@ const home = {
             activeMonth: '',
             isLoading: false,
             animationList: [],
-            filterSearchTextData: [],
+            filterSearchTextData: [], // nav高级筛选结果
             filterConfig: { // 首页高级筛选面板的配置
                 allLabelArr: [],
                 rateScore: homeRateScoreConfig,
@@ -49,6 +49,7 @@ const home = {
                 others: othersCheckConfig,
             },
             selectedFilter: deepClone(initSelectedFilter), // 首页高级筛选的选中项
+            selectedCurrentMonthFilter: [], // 页内筛选的勾选项
         }
     },
     getters: {
@@ -66,13 +67,16 @@ const home = {
             if (rootState.app.searchFlag) {
                 return state.filterSearchTextData
             } else {
-                return getters.filterDateData
+                return getters.currentBlockData
             }
         },
-        filterDateData(state) {
-            return state.animationList.filter((item) => {
+        currentBlockData(state) {
+            const currentTimeData = state.animationList.filter((item) => {
                 return item.years === state.selectedYears && item.month === state.activeMonth
             })
+
+            // 过滤排除观看终止项
+            return filterDataByOthersCheck(state.selectedCurrentMonthFilter, currentTimeData)
         },
         filterSelectedStatusConfig(state) {
             const hasSelectedRateScore = state.selectedFilter.rateScore[0] !== 0 
@@ -144,6 +148,9 @@ const home = {
         },
         setLoadingStatus(state, status) {
             state.isLoading = status
+        },
+        setCurrentMonthFilter(state, data) {
+            state.selectedCurrentMonthFilter = data
         },
     },
     actions: {

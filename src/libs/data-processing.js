@@ -179,19 +179,17 @@ export const filterDataByHideScore = (scoreArr, data) => {
 }
 
 export const filterDataByOthersCheck = (checkArr, data) => {
-    let result = []
-
     // 过滤观看终止项
     if (checkArr.includes(terminationConfig.value)) {
-        result = excludeTerminationItem(data)
+        return excludeTerminationItem(data)
     }
 
-    return result
+    return data
 }
 
 export const excludeTerminationItem = (data) => {
     return data.filter(item => {
-        return item.endProgress === item.episodes && !item.waitToScore
+        return item.endProgress === item.episodes || item.waitToScore || item.watching
     })
 }
 

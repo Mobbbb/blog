@@ -1,7 +1,7 @@
 <template>
 	<div class="app-main" @click="handleSelect">
 		<NavMenu></NavMenu>
-		<div class="main-wrap" :style="store.getters['app/mainTopStyle']">
+		<div class="main-wrap" :style="store.getters['app/mainStyle']">
 			<router-view></router-view>
 		</div>
 	</div>
@@ -34,15 +34,13 @@ export default {
 	background-size: 100% auto;
 	background-repeat: no-repeat;
 	background-position: 0 61px;
-	padding: 61px 12px 0 12px;
+	padding: 61px 0 0 0;
 	box-sizing: border-box;
 	height: 100%;
 	width: 100%;
 }
 .main-wrap{
-	width: 62%;
 	height: calc(100% - 40px);
-	min-width: 660px;
 	margin: 0 auto;
 	box-sizing: border-box;
 	background: #fff;

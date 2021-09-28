@@ -4,16 +4,24 @@ const app = {
     namespaced: true,
     state() {
         return {
-            mainTopGap: 32,
+            mainGap: [32, 0, 8, 0],
+            mainWidth: {
+                width: 0.62,
+                minWidth: 660,
+            },
+
             searchText: '',
             searchFlag: false,
             activeNavIndex: '',
         }
     },
     getters: {
-        mainTopStyle(state) {
+        mainStyle(state) {
             return {
-                marginTop: `${state.mainTopGap}px`
+                marginTop: `${state.mainGap[0]}px`,
+                width: `${state.mainWidth.width * 100}%`,
+                minWidth: `${state.mainWidth.minWidth}px`,
+                height: `calc(100% - ${state.mainGap[0] + state.mainGap[2]}px)`,
             }
         },
         popoverFilterConfig(state, getters, rootState) { // 高级筛选面板的选项配置
