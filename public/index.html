@@ -7,12 +7,6 @@
 		<meta name="description" content="Mobbbb,动漫新番,动漫推荐,新番推荐,电影评价,动漫评价">
 		<meta name="keywords" content="动漫新番,动漫评价,电影评价,动漫推荐,新番推荐,动漫,新番,动画,日本动漫,番剧,番组,二次元,ANIME">
         <link rel="icon" href="./favicon.jpg">
-		<% for (var i in htmlWebpackPlugin.options.resourceConfig && htmlWebpackPlugin.options.resourceConfig.css) { %>
-			<link href="<%= htmlWebpackPlugin.options.resourceConfig.css[i] %>" rel="stylesheet">
-		<% } %>
-		<% for (var i in htmlWebpackPlugin.options.resourceConfig && htmlWebpackPlugin.options.resourceConfig.js) { %>	
-			<script src="<%= htmlWebpackPlugin.options.resourceConfig.js[i] %>"></script>
-		<% } %>
 		<title><%= htmlWebpackPlugin.options.title %></title>
   	</head>
   	<body>
@@ -23,3 +17,9 @@
     <!-- built files will be auto injected -->
   	</body>
 </html>
+<% for (var i in htmlWebpackPlugin.options.resourceConfig && htmlWebpackPlugin.options.resourceConfig.css) { %>
+	<link href="<%= htmlWebpackPlugin.options.resourceConfig.css[i] %>" rel="stylesheet">
+<% } %>
+<% for (var i in htmlWebpackPlugin.options.resourceConfig && htmlWebpackPlugin.options.resourceConfig.js) { %>	
+	<script src="<%= htmlWebpackPlugin.options.resourceConfig.js[i] %>"></script>
+<% } %>

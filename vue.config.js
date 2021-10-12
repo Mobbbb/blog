@@ -2,6 +2,8 @@
 const name = 'Mobbbb';
 const path = require('path');
 const resourceConfig = require('./src/config/resource.js');
+const PrerenderSPAPlugin = require('prerender-spa-plugin');
+const Renderer = PrerenderSPAPlugin.PuppeteerRenderer;
 
 function resolve(dir) {
     return path.join(__dirname, dir)
@@ -39,6 +41,22 @@ module.exports = {
                 'vue': 'Vue',
                 'element-plus': 'ElementPlus',
             }
+
+            config.plugins.push(
+                new PrerenderSPAPlugin({
+                    // Required - The path to the webpack-outputted app to prerender.
+                    staticDir: path.join(__dirname, 'dist'),
+                    // Optional - The path your rendered app should be output to.
+                    // (Defaults to staticDir.)
+                    outputDir: path.join(__dirname, 'dist'),
+                    // Required - Routes to render.
+                    routes: ['/'],
+                    renderer: new Renderer({
+                        headless: false,
+                        renderAfterTime: 5000
+                    })
+                }),
+            )
         }
         
         return {
@@ -50,6 +68,11 @@ module.exports = {
         }
     },
     chainWebpack: (config) => {
+        if (process.env.NODE_ENV === 'analyz') {
+            config
+                .plugin('webpack-bundle-analyzer')
+                .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+        }
         if (process.env.NODE_ENV === 'production') {
             // 生产环境下注入在html模板注入cdn
             config.plugin('html').tap(args => {
