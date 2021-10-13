@@ -2,6 +2,12 @@
 
 const name = 'AMS - Animation.Moive.Summary';
 const outputDir = 'dist';
+const proxyConfig = {
+    '/resource': {
+        target: 'http://mobbbb.top',
+        changOrigin: true,
+    },
+};
 
 const path = require('path');
 const resourceConfig = require('./src/config/resource.js');
@@ -31,12 +37,7 @@ module.exports = {
     productionSourceMap: false,
 
     devServer: {
-        proxy: {
-            '/resource': {
-                target: 'http://mobbbb.top',
-                changOrigin: true,
-            },
-        },
+        proxy: proxyConfig,
     },
 
     configureWebpack: (config) => {
@@ -58,16 +59,11 @@ module.exports = {
                     // Required - Routes to render.
                     routes: ['/'],
                     renderer: new Renderer({
-                        headless: false,
-                        renderAfterTime: 5000
+                        headless: true, // 是否隐藏无头浏览器(调试时可开启)
+                        renderAfterTime: 5000,
                     }),
                     server: {
-                        proxy: {
-                            '/resource': {
-                                target: 'http://mobbbb.top',
-                                changOrigin: true,
-                            },
-                        },
+                        proxy: proxyConfig,
                     },
                 }),
             )

@@ -1,7 +1,7 @@
 <template>
     <div class="animation-item">
         <div class="image-wrap">
-            <img :src="data.cover">
+            <img :src="data.cover" :alt="data.showName">
             <div class="image-label image-left-label" v-if="searchFlag">{{data.years}}</div>
             <div class="image-label image-right-label" v-if="searchFlag">{{data.month}}月</div>
         </div>
