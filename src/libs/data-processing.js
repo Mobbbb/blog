@@ -199,7 +199,10 @@ export const initSummaryListData = (data) => {
         item._index = index
         for (let i = 0; i < item.content.length; i++) {
             if (textTypeMap.includes(item.content[i].type)) {
-                item.ellipsisContent = item.content[i].value.substring(0, 200)
+                let itemValue = item.content[i].value
+                if (Array.isArray(itemValue)) itemValue = itemValue.join('')
+                
+                item.ellipsisContent = itemValue.substring(0, 200)
                 break
             }
         }

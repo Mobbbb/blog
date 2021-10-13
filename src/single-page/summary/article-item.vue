@@ -12,6 +12,9 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+import { summaryDetailRoute } from '@/router'
+
 export default {
     name: 'article-item',
     props: ['params'],
@@ -21,8 +24,17 @@ export default {
         }
     },
     methods: {
+        ...mapMutations('app', [
+            'updateActiveNavIndex',
+        ]),
         jumpToDetail() {
-            
+            this.updateActiveNavIndex(summaryDetailRoute.path)
+            this.$router.push({
+                name: summaryDetailRoute.name,
+                query: {
+                    index: this.params._index,
+                }
+            })
         },
     },
 }

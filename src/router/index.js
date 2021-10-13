@@ -1,27 +1,33 @@
 import { createRouter, createWebHashHistory } from "vue-router"
 import store from '@/store'
 
-export const home = {
+export const homeRoute = {
     path: '/home',
     name: 'home',
     component: () => import('@/single-page/home/home.vue')
 }
-export const movie = {
+export const movieRoute = {
     path: "/movie",
     name: "movie",
     component: () => import('@/single-page/movie/movie-page.jsx')
 }
-export const summary = {
+export const summaryRoute = {
     path: "/summary",
     name: "summary",
     component: () => import('@/single-page/summary/index.vue')
 }
+export const summaryDetailRoute = {
+    path: "/summary/detail",
+    name: "summaryDetail",
+    component: () => import('@/single-page/summary/detail.vue')
+}
 
 const routes = [
     { path: "/", redirect: "/home" },
-    home,
-    movie,
-    summary,
+    homeRoute,
+    movieRoute,
+    summaryRoute,
+    summaryDetailRoute,
 ]
 
 const router = createRouter({
@@ -30,7 +36,8 @@ const router = createRouter({
 })
 
 router.afterEach((to, from, failure) => {
-    localStorage.setItem('active-nav-index', to.name)
+    // ???
+    // localStorage.setItem('active-nav-index', to.name)
     if (store.state.app.searchFlag) {
         // 清空输入框，重置搜索状态
         store.commit('app/updateInputValue', '')

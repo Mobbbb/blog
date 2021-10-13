@@ -7,9 +7,9 @@
                         :default-active="activeNavIndex" 
                         @select="handleSelect" 
                         router>
-                <el-menu-item index="home">首页</el-menu-item>
-                <el-menu-item index="movie">电影评价</el-menu-item>
-                <el-menu-item index="summary">总结</el-menu-item>
+                <el-menu-item index="/home">首页</el-menu-item>
+                <el-menu-item index="/movie">电影评价</el-menu-item>
+                <el-menu-item index="/summary">总结</el-menu-item>
             </el-menu>
         
             <el-popover placement="bottom-end"

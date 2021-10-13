@@ -1,4 +1,4 @@
-import router from '@/router'
+import router, { homeRoute, movieRoute, summaryRoute } from '@/router'
 
 const app = {
     namespaced: true,
@@ -47,11 +47,15 @@ const app = {
     },
     actions: {
         initActiveNavIndex({ commit }) {
-            const navIndex = localStorage.getItem('active-nav-index') || 'home'
+            const navIndex = localStorage.getItem('active-nav-index') || homeRoute.path
             commit('updateActiveNavIndex', navIndex)
         },
         searchHandle({ state, rootGetters, commit, dispatch }) {
             const { name } = router.currentRoute.value
+            const searchRouteList = [homeRoute.name, movieRoute.name, summaryRoute.name]
+
+            if (!searchRouteList.includes(name)) return
+
             if (state.searchText.trim() === '' && !rootGetters[`${name}/hasSelectedFilter`]) {
                 commit('updateSearchFlag', false)
             } else {

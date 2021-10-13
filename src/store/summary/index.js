@@ -25,7 +25,7 @@ const summary = {
             if (state.articleList.length) return 
 
             commit('setLoadingStatus', true)
-            const { data: listData = [] } = await fetchSummaryListData()
+            const { data: listData = [] } = await fetchSummaryListData() || {}
             commit('setLoadingStatus', false)
 
             initSummaryListData(listData)

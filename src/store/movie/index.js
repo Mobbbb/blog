@@ -69,7 +69,7 @@ const movie = {
             if (state.movieList.length) return 
 
             commit('setLoadingStatus', true)
-            const { data: listData } = await fetchMovieListData()
+            const { data: listData = [] } = await fetchMovieListData() || {}
             commit('setLoadingStatus', false)
 
             commit('setMovieList', listData)
