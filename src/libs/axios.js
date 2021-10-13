@@ -33,14 +33,18 @@ class HttpRequest {
             }
             return config
         }, error => {
-            return Promise.reject(error)
+            return Promise.reject(error).catch(e => {
+                console.error(e)
+            })
         })
         // 响应拦截
         instance.interceptors.response.use(res => {
             this.destroy(url)
             if (res && res.status !== 200) {
                 // todo error
-                return Promise.reject(res)
+                return Promise.reject(res).catch(e => {
+                    console.error(e)
+                })
             } else {
                 const { data, status } = res
                 return { data, status }
@@ -48,7 +52,9 @@ class HttpRequest {
         }, error => {
             this.destroy(url)
             // todo error
-            return Promise.reject(error)
+            return Promise.reject(error).catch(e => {
+                console.error(e)
+            })
         })
     }
     request(options) {

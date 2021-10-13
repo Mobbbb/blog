@@ -174,9 +174,9 @@ const home = {
 
             commit('setLoadingStatus', true)
             // 列表数据
-            let { data: listData } = await fetchHomeListData()
+            let { data: listData = [] } = await fetchHomeListData() || {}
             // 评分规则
-            let { data: scoreMap } = await fetchScoreMap()
+            let { data: scoreMap = {} } = await fetchScoreMap() || {}
             commit('setLoadingStatus', false)
 
             const { data, allLabelArr } = initHomeListData(scoreMap, listData)

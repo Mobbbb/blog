@@ -1,9 +1,15 @@
 'use strict';
-const name = 'Mobbbb';
+
+const name = 'AMS - Animation.Moive.Summary';
+const outputDir = 'dist';
+
 const path = require('path');
 const resourceConfig = require('./src/config/resource.js');
 const PrerenderSPAPlugin = require('prerender-spa-plugin');
+const WebpackBundleAnalyzer = require('webpack-bundle-analyzer');
+
 const Renderer = PrerenderSPAPlugin.PuppeteerRenderer;
+const BundleAnalyzer = WebpackBundleAnalyzer.BundleAnalyzerPlugin;
 
 function resolve(dir) {
     return path.join(__dirname, dir)
@@ -19,7 +25,7 @@ module.exports = {
      * Detail: https://cli.vuejs.org/config/#publicpath
      */
     publicPath: '/',
-    outputDir: 'dist',
+    outputDir,
     assetsDir: 'static',
     // filenameHashing: false, 文件不带hash
     productionSourceMap: false,
@@ -45,16 +51,24 @@ module.exports = {
             config.plugins.push(
                 new PrerenderSPAPlugin({
                     // Required - The path to the webpack-outputted app to prerender.
-                    staticDir: path.join(__dirname, 'dist'),
+                    staticDir: path.join(__dirname, outputDir),
                     // Optional - The path your rendered app should be output to.
                     // (Defaults to staticDir.)
-                    outputDir: path.join(__dirname, 'dist'),
+                    outputDir: path.join(__dirname, outputDir),
                     // Required - Routes to render.
                     routes: ['/'],
                     renderer: new Renderer({
                         headless: false,
                         renderAfterTime: 5000
-                    })
+                    }),
+                    server: {
+                        proxy: {
+                            '/resource': {
+                                target: 'http://mobbbb.top',
+                                changOrigin: true,
+                            },
+                        },
+                    },
                 }),
             )
         }
@@ -69,9 +83,7 @@ module.exports = {
     },
     chainWebpack: (config) => {
         if (process.env.NODE_ENV === 'analyz') {
-            config
-                .plugin('webpack-bundle-analyzer')
-                .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+            config.plugin('webpack-bundle-analyzer').use(BundleAnalyzer)
         }
         if (process.env.NODE_ENV === 'production') {
             // 生产环境下注入在html模板注入cdn
