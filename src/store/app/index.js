@@ -42,14 +42,9 @@ const app = {
         },
         updateActiveNavIndex(state, value) {
             state.activeNavIndex = value
-            localStorage.setItem('active-nav-index', value)
         },
     },
     actions: {
-        initActiveNavIndex({ commit }) {
-            const navIndex = localStorage.getItem('active-nav-index') || homeRoute.path
-            commit('updateActiveNavIndex', navIndex)
-        },
         searchHandle({ state, rootGetters, commit, dispatch }) {
             const { name } = router.currentRoute.value
             const searchRouteList = [homeRoute.name, movieRoute.name, summaryRoute.name]

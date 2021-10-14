@@ -74,22 +74,19 @@ export default {
         },
     },
     mounted() {
-        this.initActiveNavIndex()
         this.popoverEl = this.$refs.popoverRef.$refs.popperRef
         this.inputEl = this.$refs.searchInput
     },
 	methods: {
         ...mapMutations('app', [
             'updateInputValue',
-            'updateActiveNavIndex',
         ]),
         ...mapActions('app', [
             'searchHandle',
-            'initActiveNavIndex',
             'resetFilterHandle',
         ]),
 		handleSelect(activeIndex) {
-            this.updateActiveNavIndex(activeIndex)
+            
 		},
         onEnter() {
             this.inputEl.blur()

@@ -9,8 +9,10 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "babel-plugin-prismjs": "^2.1.0",
     "core-js": "^3.8.3",
     "element-plus": "^1.0.2-beta.52",
+    "prismjs": "^1.25.0",
     "vue": "^3.0.4",
     "vue-router": "^4.0.0-beta.13"
   },

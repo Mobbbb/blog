@@ -36,8 +36,7 @@ const router = createRouter({
 })
 
 router.afterEach((to, from, failure) => {
-    // ???
-    // localStorage.setItem('active-nav-index', to.name)
+    store.commit('app/updateActiveNavIndex', to.path)
     if (store.state.app.searchFlag) {
         // 清空输入框，重置搜索状态
         store.commit('app/updateInputValue', '')
