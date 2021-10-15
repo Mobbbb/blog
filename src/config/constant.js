@@ -82,4 +82,11 @@ export const terminationConfig = {
 
 export const othersCheckConfig = [terminationConfig]
 
-export const textTypeMap = ['text', 'code']
+export const summaryTypeMap = {
+    TEXT: 'text',
+    CODE: 'code',
+    MIXED: 'mixed',
+    IMG: 'img',
+}
+
+export const textTypeMap = [summaryTypeMap.TEXT, summaryTypeMap.CODE]

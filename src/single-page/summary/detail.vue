@@ -1,8 +1,9 @@
 <template>
     <div class="summary-detail-wrap">
+        <div class="detail-title">{{detailData.title}}</div>
         <div v-for="(line, index) in formatData" :key="index" class="line-wrap">
             <div v-if="line.type.split('-')[0] === 'title'" 
-                :class="`detail-title detail-title-${line.type.split('-')[1]}`"
+                :class="`detail-sub-title detail-title-${line.type.split('-')[1]}`"
                 :style="!index ? { marginTop: 0 } : {}">
                 {{line.value}}
             </div>
@@ -24,6 +25,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import { formatSummaryContent } from '@/libs/data-processing'
 import Prism from 'prismjs'
 
 export default {
@@ -38,48 +40,21 @@ export default {
             'articleList',
         ]),
         detailData() {
-            return this.articleList[parseInt(this.$route.query.index)] || {}
+           for (let i = 0; i < this.articleList.length; i++) {
+                if (this.articleList[i]._index === parseInt(this.$route.query.index)) {
+                    return this.articleList[i]
+                }
+            }
+            return {}
         },
         formatData() {
-            const formatDataList = []
+            let formatDataList = []
             const { content = [] } = this.detailData
-            content.forEach(item => {
-                if (item.type === 'text') {
-                    item.value.forEach(lineContent => {
-                        if (lineContent.indexOf('{js}') > -1) {
-                            let lineList = []
-                            let reg = new RegExp(/\{js}.+?\{\/js}/g) // /\{js}.*?\{\/js}/g
-                            let splitLineOfContent = lineContent.split(reg)
-                            let splitLineOfCode = lineContent.match(reg)
-                            splitLineOfContent.forEach((splitText, index) => {
-                                if (index) {
-                                    lineList.push({
-                                        value: splitLineOfCode[index - 1].slice(4, -5),
-                                        type: 'code',
-                                        language: 'js',
-                                    })
-                                }
-                                lineList.push({
-                                    value: splitText,
-                                    type: 'text'
-                                })
-                            })
-                            formatDataList.push({
-                                value: lineList,
-                                type: 'mixed'
-                            })
-                        } else {
-                            formatDataList.push({
-                                value: lineContent,
-                                type: 'text'
-                            })
-                        }
-                    })
-                } else {
-                    formatDataList.push(item)
-                }
-            })
+            const splitLanguageList = ['{js}', '{css}', '{html}']
 
+            content.forEach(item => {
+                formatDataList = [...formatDataList, ...formatSummaryContent(item, splitLanguageList)]
+            })
             return formatDataList
         },
     },
@@ -103,6 +78,12 @@ export default {
     color: #404040;
 }
 .detail-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+.detail-sub-title {
     margin-top: 12px;
     font-weight: 600;
     text-rendering: optimizelegibility;

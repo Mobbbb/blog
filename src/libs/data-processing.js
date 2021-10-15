@@ -1,5 +1,5 @@
 import { descendingOrder, ascendingOrder } from './util'
-import { burstScore, minusScore, terminationConfig, textTypeMap } from '@/config/constant'
+import { burstScore, minusScore, terminationConfig, textTypeMap, summaryTypeMap } from '@/config/constant'
 
 export const homeTotalScore = 5
 export const movieTotalScore = 10
@@ -197,6 +197,7 @@ export const initSummaryListData = (data) => {
     data.forEach((item, index) => {
         item.ellipsisContent = ''
         item._index = index
+        item.timestamp = Date.parse(new Date(item.date))
         for (let i = 0; i < item.content.length; i++) {
             if (textTypeMap.includes(item.content[i].type)) {
                 let itemValue = item.content[i].value
@@ -207,4 +208,84 @@ export const initSummaryListData = (data) => {
             }
         }
     })
+    
+    data.sort(descendingOrder('timestamp'))
+}
+
+export const formatSummaryContent = (content, splitLanguageList) => {
+    const formatDataList = []
+    if (content.type === summaryTypeMap.TEXT) { // 文本
+        content.value.forEach(lineContent => { // 将单行文本处理为数组——以文字片段、代码片段分割
+            let lineList = []
+            splitLanguageList.forEach(splitLanguageItem => {
+                if (lineContent.indexOf(splitLanguageItem) > -1) {
+                    lineList = getSplitListByLanguage(lineContent, lineList, splitLanguageItem)
+                }
+            })
+
+            if (lineList.length) { // 存在代码片段
+                formatDataList.push({
+                    value: lineList,
+                    type: summaryTypeMap.MIXED,
+                })
+            } else {
+                formatDataList.push({
+                    value: lineContent,
+                    type: summaryTypeMap.TEXT,
+                })
+            }
+        })
+    } else {
+        formatDataList.push(content)
+    }
+
+    return formatDataList
+}
+
+/**
+ * @description 处理单行文字 或 二次处理单行文字中的片段
+ * @param {*} str 处理单行文字时的对象
+ * @param {*} list 二次处理单行文字中的片段的对象
+ * @param {*} splitKey 
+ * @returns 
+ */
+export const getSplitListByLanguage = (str, list = [], splitKey) => {
+    let lineList = [], mapList = []
+    
+    if (!list.length) { // 首次对字符串进行切割
+        mapList = [{
+            value: str,
+            type: 'text',
+        }]
+    } else {
+        mapList = list
+    }
+
+    mapList.forEach(item => {
+        if (item.value.indexOf(splitKey) > -1) {
+            const language = splitKey.slice(1, splitKey.length - 1)
+            let reg = new RegExp(eval('/{' + language + '}.+?{\\/' + language + '}/g')) // /\{js}.*?\{\/js}/g
+            let splitLineOfContent = item.value.split(reg)
+            let splitLineOfCode = item.value.match(reg)
+            
+            splitLineOfContent.forEach((splitText, index) => {
+                if (index) { // 拼接代码段
+                    const splitCode = splitLineOfCode[index - 1]
+                    lineList.push({
+                        value: splitCode.slice(splitKey.length, splitCode.length - splitKey.length - 1),
+                        type: summaryTypeMap.CODE,
+                        language,
+                    })
+                }
+                lineList.push({ // 拼接文字段
+                    value: splitText,
+                    type: summaryTypeMap.TEXT,
+                })
+            })
+        } else {
+            lineList.push(item)
+        }
+    })
+
+    return lineList
 }
