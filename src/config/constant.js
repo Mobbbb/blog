@@ -80,6 +80,11 @@ export const terminationConfig = {
     value: '0',
 }
 
+export const unratedConfig = {
+    label: '排除未评分项',
+    value: '1',
+}
+
 export const othersCheckConfig = [terminationConfig]
 
 export const summaryTypeMap = {

@@ -17,7 +17,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import { terminationConfig } from '@/config/constant.js'
+import { terminationConfig, unratedConfig } from '@/config/constant.js'
 import Triangle from '@/components/triangle.vue'
 
 export default {
@@ -27,7 +27,7 @@ export default {
     },
     data() {
         return {
-            filterConfig: [terminationConfig],
+            filterConfig: [terminationConfig, unratedConfig],
             trianglePos: {},
         }
     },

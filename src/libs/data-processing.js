@@ -1,5 +1,5 @@
 import { descendingOrder, ascendingOrder } from './util'
-import { burstScore, minusScore, terminationConfig, textTypeMap, summaryTypeMap } from '@/config/constant'
+import { burstScore, minusScore, terminationConfig, unratedConfig, textTypeMap, summaryTypeMap } from '@/config/constant'
 
 export const homeTotalScore = 5
 export const movieTotalScore = 10
@@ -179,14 +179,35 @@ export const filterDataByHideScore = (scoreArr, data) => {
 }
 
 export const filterDataByOthersCheck = (checkArr, data) => {
+    let filterData = data
     // 过滤观看终止项
     if (checkArr.includes(terminationConfig.value)) {
-        return excludeTerminationItem(data)
+        filterData = excludeTerminationItem(data)
+    }
+    // 过滤未评分数据
+    if (checkArr.includes(unratedConfig.value)) {
+        filterData = excludeUnratedItem(data)
     }
 
-    return data
+    return filterData
 }
 
+/**
+ * @description 过滤未评分数据
+ * @param {*} data 
+ * @returns 
+ */
+export const excludeUnratedItem = (data) => {
+    return data.filter(item => {
+        return !item.waitToScore
+    })
+}
+
+/**
+ * @description 过滤观看终止项
+ * @param {*} data 
+ * @returns 1、已看完 2、观看中的待评分项 3、观看中的已评分项 4、已看完的待评分项
+ */
 export const excludeTerminationItem = (data) => {
     return data.filter(item => {
         return item.endProgress === item.episodes || item.waitToScore || item.watching
@@ -255,7 +276,7 @@ export const getSplitListByLanguage = (str, list = [], splitKey) => {
     if (!list.length) { // 首次对字符串进行切割
         mapList = [{
             value: str,
-            type: 'text',
+            type: summaryTypeMap.TEXT,
         }]
     } else {
         mapList = list

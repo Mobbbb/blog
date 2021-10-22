@@ -75,7 +75,7 @@ const home = {
                 return item.years === state.selectedYears && item.month === state.activeMonth
             })
 
-            // 过滤排除观看终止项
+            // 过滤页脚的筛选项
             return filterDataByOthersCheck(state.selectedCurrentMonthFilter, currentTimeData)
         },
         filterSelectedStatusConfig(state) {
