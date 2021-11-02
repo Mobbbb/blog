@@ -19,7 +19,7 @@ export const summaryRoute = {
 export const summaryDetailRoute = {
     path: "/summary/detail",
     name: "summaryDetail",
-    component: () => import('@/single-page/summary/detail.vue')
+    component: () => import('@/single-page/summary/detail/index.vue')
 }
 
 const routes = [
