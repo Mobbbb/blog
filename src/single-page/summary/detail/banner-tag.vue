@@ -39,15 +39,16 @@ export default {
     color: #999aaa;
     background: #f8f8f8;
     border-radius: 4px;
-    padding: 0 12px;
     margin-bottom: 12px;
     position: relative;
-    padding: 0 48px;
+    padding: 0 12px 0 48px;
 }
 .summary-bar-top {
     line-height: 32px;
     position: relative;
     z-index: 10;
+    padding-right: 36px;
+    margin-bottom: -4px;
 }
 .summary-top-text {
     margin-right: 16px;
@@ -70,6 +71,7 @@ export default {
     line-height: 17px;
     border-radius: 2px;
     display: inline-block;
+    margin-top: 4px;
 }
 .ladder-shaped {
     position: absolute;
@@ -79,19 +81,17 @@ export default {
     text-align: center;
     left: -17px;
     top: -24px;
-    z-index: 1;
+    z-index: 9;
 }
 .ladder-shaped-text {
-    height: 100%;
-    width: 100%;
+    height: 23px;
+    line-height: normal;
     color: white;
     position: absolute;
     text-align: center;
-    line-height: 80px;
-    left: 0;
-    top: 0;
+    left: 22px;
+    top: 29px;
     box-sizing: border-box;
-    padding-right: 6px;
     z-index: 3;
 }
 .ladder-shaped::before { 
@@ -116,6 +116,7 @@ export default {
     right: 8px;
     top: 0;
     cursor: pointer;
+    z-index: 11;
 }
 .back-btn:hover {
     color: #fc5531;

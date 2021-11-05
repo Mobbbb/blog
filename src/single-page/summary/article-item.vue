@@ -58,6 +58,9 @@ export default {
 }
 .article-title > span {
     margin-right: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .article-title > span:hover {
     cursor: pointer;
@@ -74,6 +77,7 @@ export default {
     border-radius: 2px;
     display: inline-block;
     margin-right: 4px;
+    white-space: nowrap;
 }
 .ellipsis-content {
     margin-top: 6px;
