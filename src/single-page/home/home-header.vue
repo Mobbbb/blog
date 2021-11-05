@@ -28,7 +28,7 @@
         </template>
         <template v-else>
             <div class="home-header">
-                <span>番剧评价</span>
+                <span class="home-header-title">番剧评价</span>
                 <a  v-for="item in months"
                     :key="item.value" 
                     :class="activeMonth === item.value ? 'link-active' : ''" 
@@ -146,7 +146,7 @@ export default {
     margin-right: 20px;
 }
 @media screen and (max-width: 530px) {
-    .home-header > span{
+    .home-header-title{
         display: none;
     }
 }

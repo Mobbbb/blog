@@ -1,11 +1,10 @@
 <template>
     <div class="nav-wrap">
-        <div class="page-nav-wrap">
+        <div class="page-nav-wrap" :style="pageNavWrapStyle">
             <el-menu    background-color="transparent" 
                         class="el-menu-nav" 
                         mode="horizontal" 
                         :default-active="activeNavIndex" 
-                        @select="handleSelect" 
                         router>
                 <template v-for="item in routes">
                     <el-menu-item :index="item.path" v-if="item.meta.level === 0" :key="item.path">
@@ -44,6 +43,7 @@
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { routes } from '@/router'
+import config, { PC } from '@/config'
 import DescLabel from '@/single-page/home/desc-label.vue'
 import PopoverFilter from './popover-filter.vue'
 
@@ -64,10 +64,16 @@ export default {
     computed: {
         ...mapState('app', [
             'activeNavIndex',
+            'mainWidth',
         ]),
         ...mapGetters('app', [
             'popoverFilterConfig',
         ]),
+        pageNavWrapStyle() {
+            return { 
+                width: `${this.mainWidth.width * 100}%`,
+            }
+        },
         searchText: {
             get() {
                 return this.$store.state.app.searchText
@@ -89,41 +95,45 @@ export default {
             'searchHandle',
             'resetFilterHandle',
         ]),
-		handleSelect(activeIndex) {
-            
-		},
         onEnter() {
             this.inputEl.blur()
             this.searchHandle()
-            this.hidePopover()
+            this.hidePopoverAction()
         },
         onFocus() {
             if (Object.keys(this.popoverFilterConfig).length) {
                 this.showFilterContent = true
                 // 添加隐藏高级筛选的监听器
-                // click事件会出现误触现象——在弹框内mousedown，并在弹框外mouseup，点击区域会被判定为在弹框之外
-                document.addEventListener('mousedown', this.hidePopoverByEl)
+                // click事件会出现误触现象——在弹框内长按，并在弹框外mouseup，点击区域会被判定为在弹框之外
+                this.eventListenerHandle('addEventListener')
             }
         },
-        hidePopoverByEl(e) {
-            if (!e.path.includes(this.popoverEl) && !e.path.includes(this.inputEl)) {
-                this.hidePopover()
-            }
-        },
-        hidePopover() {
+        hidePopoverAction() {
             this.showFilterContent = false
             // 移除监听器
-            document.removeEventListener('mousedown', this.hidePopoverByEl)
+            this.eventListenerHandle('removeEventListener')
         },
         clickResetBtn() {
             this.updateInputValue('')
             this.resetFilterHandle()
             this.searchHandle()
-            this.hidePopover()
+            this.hidePopoverAction()
         },
         clickSearchBtn() {
             this.searchHandle()
-            this.hidePopover()
+            this.hidePopoverAction()
+        },
+        hidePopoverByEl(e) {
+            if (!e.path.includes(this.popoverEl) && !e.path.includes(this.inputEl)) {
+                this.hidePopoverAction()
+            }
+        },
+        eventListenerHandle(type) {
+            if (config.device === PC) {
+                document[type]('mousedown', this.hidePopoverByEl)
+            } else {
+                document[type]('click', this.hidePopoverByEl)
+            }
         },
 	}
 }
@@ -143,12 +153,11 @@ export default {
 }
 .page-nav-wrap {
     position: relative;
-	width: 62%;
 	margin: 0 auto;
 }
 @media screen and (max-width: 530px) {
     .page-nav-wrap {
-        width: 100%;
+        width: 100%!important;
     }
 }
 .search-input-wrap {

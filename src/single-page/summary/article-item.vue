@@ -1,7 +1,7 @@
 <template>
-    <div class="article-item-wrap">
+    <div class="article-item-wrap" @click="jumpToDetail">
         <div class="article-title">
-            <span @click="jumpToDetail">{{params.title}}</span>
+            <span>{{params.title}}</span>
             <div class="article-type-wrap">
                 <span class="article-type-label" v-for="item in params.label" :key="item">{{item}}</span>
             </div>
@@ -44,6 +44,7 @@ export default {
 }
 .article-item-wrap:hover {
     background: #f9fafc;
+    cursor: pointer;
 }
 .article-item-wrap:hover .article-title {
     color: #fc5531;
@@ -61,9 +62,6 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-.article-title > span:hover {
-    cursor: pointer;
 }
 .article-type-wrap {
     display: flex;

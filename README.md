@@ -1,4 +1,4 @@
-# Blog
+# AMS
 
 ## Project setup
 ```
