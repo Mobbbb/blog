@@ -4,6 +4,7 @@ const app = {
     namespaced: true,
     state() {
         return {
+            navHeight: 60,
             mainGap: [32, 0, 8, 0],
             mainWidth: {
                 width: 0.62,

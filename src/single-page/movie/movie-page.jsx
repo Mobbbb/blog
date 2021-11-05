@@ -20,13 +20,15 @@ export default defineComponent({
 
 		return {
 			mainTopGap: computed(() => store.state.app.mainGap[0]),
+			outsideHeight: computed(() => {
+				return store.state.app.mainGap[0] + store.state.app.navHeight
+			}),
 			isLoading: computed(() => store.state.movie.isLoading),
 			showMovieList: computed(() => store.getters['movie/showMovieList']),
 			clientHeight,
 		}
 	},
 	render() {
-		const outsideHeight = 61 + this.mainTopGap
 		const paddingTopAndBottom = 32
 		return (
 			<div class="table-head-class">
@@ -34,7 +36,7 @@ export default defineComponent({
 							v-loading={ this.isLoading }
 							empty-text={ this.isLoading ? ' ' : '暂无数据' }
 							header-cell-style={ {background: '#eef1f6'} }
-							height={ this.clientHeight - outsideHeight - paddingTopAndBottom }
+							height={ this.clientHeight - this.outsideHeight - paddingTopAndBottom }
 							data={ this.showMovieList }
     						default-sort={ {prop: 'score', order: 'descending'} }>
 					<el-table-column fixed type="index"width="50" align="center"></el-table-column>

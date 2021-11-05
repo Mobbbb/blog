@@ -1,5 +1,5 @@
 <template>
-	<div class="app-main" @click="handleSelect">
+	<div class="app-main" :style="appMainStyle" @click="handleSelect">
 		<NavMenu></NavMenu>
 		<div class="main-wrap" :style="store.getters['app/mainStyle']">
 			<router-view></router-view>
@@ -9,6 +9,7 @@
 
 <script>
 import NavMenu from '@/single-page/componnets/nav-menu.vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
@@ -19,7 +20,13 @@ export default {
 	setup() {
 		const store = new useStore()
 		return {
-			store
+			store,
+			appMainStyle: computed(() => {
+				return { 
+					paddingTop: `${store.state.app.navHeight}px`,
+					backgroundPosition: `0 ${store.state.app.navHeight}px`,
+				}
+			}),
 		}
 	},
 	methods: {
@@ -33,8 +40,6 @@ export default {
 	background: url('//mobbbb.top/resource/home-assets/images/bg.jpg');
 	background-size: 100% auto;
 	background-repeat: no-repeat;
-	background-position: 0 61px;
-	padding: 61px 0 0 0;
 	box-sizing: border-box;
 	height: 100%;
 	width: 100%;

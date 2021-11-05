@@ -65,6 +65,7 @@ export default {
         ...mapState('app', [
             'activeNavIndex',
             'mainWidth',
+            'navHeight',
         ]),
         ...mapGetters('app', [
             'popoverFilterConfig',
@@ -72,6 +73,7 @@ export default {
         pageNavWrapStyle() {
             return { 
                 width: `${this.mainWidth.width * 100}%`,
+                height: `${this.navHeight}px`
             }
         },
         searchText: {
@@ -132,7 +134,7 @@ export default {
             if (config.device === PC) {
                 document[type]('mousedown', this.hidePopoverByEl)
             } else {
-                document[type]('click', this.hidePopoverByEl)
+                document[type]('touchstart', this.hidePopoverByEl)
             }
         },
 	}
@@ -147,12 +149,11 @@ export default {
 	width: 100%;
 	z-index: 100;
 	background: linear-gradient(to right, #3c384bda, #d7c8cbe5 9%, #e9dfd8dc 15%, #fbfbfb 30%, #fbfbfb 70%, #e9dfd8dc 85%, #d7c8cbe5 91.5%, #3c384baf);
-    border-bottom: 1px solid #e6e6e6;
-    height: 61px;
     box-sizing: border-box;
 }
 .page-nav-wrap {
     position: relative;
+    overflow: hidden;
 	margin: 0 auto;
 }
 @media screen and (max-width: 530px) {

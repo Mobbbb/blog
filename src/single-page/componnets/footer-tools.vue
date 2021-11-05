@@ -83,6 +83,7 @@ export default {
 }
 .filter-item-label {
     font-size: 12px;
+    line-height: 22px;
 }
 </style>
 
