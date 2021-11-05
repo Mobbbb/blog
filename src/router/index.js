@@ -1,37 +1,59 @@
-import { createRouter, createWebHashHistory } from "vue-router"
+import { createRouter, createWebHistory } from "vue-router"
 import store from '@/store'
 
 export const homeRoute = {
-    path: '/home',
+    path: '/',
     name: 'home',
+    meta: {
+        level: 0,
+        name: '首页',
+    },
     component: () => import('@/single-page/home/home.vue')
 }
 export const movieRoute = {
-    path: "/movie",
+    path: "/movie/",
     name: "movie",
+    meta: {
+        level: 0,
+        name: '电影',
+    },
     component: () => import('@/single-page/movie/movie-page.jsx')
 }
 export const summaryRoute = {
-    path: "/summary",
+    path: "/summary/",
     name: "summary",
+    meta: {
+        level: 0,
+        name: '总结',
+    },
     component: () => import('@/single-page/summary/index.vue')
 }
 export const summaryDetailRoute = {
     path: "/summary/detail",
     name: "summaryDetail",
+    meta: {
+        level: 1,
+    },
     component: () => import('@/single-page/summary/detail/index.vue')
 }
+export const notFoundRoute = {
+    path: "/:pathMatch(.*)",
+    meta: {
+        level: -1,
+    },
+    component: () => import('@/single-page/not-found-page/index.vue')
+}
 
-const routes = [
-    { path: "/", redirect: "/home" },
+export const routes = [
     homeRoute,
     movieRoute,
     summaryRoute,
     summaryDetailRoute,
+    notFoundRoute,
 ]
 
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes,
 })
 

@@ -57,7 +57,7 @@ module.exports = {
                     // (Defaults to staticDir.)
                     outputDir: path.join(__dirname, outputDir),
                     // Required - Routes to render.
-                    routes: ['/'],
+                    routes: ['/', '/summary', '/movie'],
                     renderer: new Renderer({
                         headless: true, // 是否隐藏无头浏览器(调试时可开启)
                         renderAfterTime: 5000,

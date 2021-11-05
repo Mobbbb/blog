@@ -7,9 +7,11 @@
                         :default-active="activeNavIndex" 
                         @select="handleSelect" 
                         router>
-                <el-menu-item index="/home">首页</el-menu-item>
-                <el-menu-item index="/movie">电影评价</el-menu-item>
-                <el-menu-item index="/summary">总结</el-menu-item>
+                <template v-for="item in routes">
+                    <el-menu-item :index="item.path" v-if="item.meta.level === 0" :key="item.path">
+                        {{item.meta.name}}
+                    </el-menu-item>
+                </template>
             </el-menu>
         
             <el-popover placement="bottom-end"
@@ -41,6 +43,7 @@
 
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+import { routes } from '@/router'
 import DescLabel from '@/single-page/home/desc-label.vue'
 import PopoverFilter from './popover-filter.vue'
 
@@ -52,6 +55,7 @@ export default {
     },
     data() {
         return {
+            routes,
             showFilterContent: false,
             popoverEl: null, // 高级筛选面板
             inputEl: null, // 搜索框
