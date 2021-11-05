@@ -146,6 +146,11 @@ export default {
 	width: 62%;
 	margin: 0 auto;
 }
+@media screen and (max-width: 530px) {
+    .page-nav-wrap {
+        width: 100%;
+    }
+}
 .search-input-wrap {
     position: absolute;
     display: inline-block;

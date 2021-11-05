@@ -159,7 +159,7 @@ export default {
 .animation-item {
     display: flex;
     width: 33%;
-    min-width: 280px;
+    min-width: 285px;
     padding-right: 8px;
     margin-bottom: 20px;
     box-sizing: border-box;

@@ -7,7 +7,7 @@ const app = {
             mainGap: [32, 0, 8, 0],
             mainWidth: {
                 width: 0.62,
-                minWidth: 660,
+                minWidth: 400,
             },
 
             searchText: '',

@@ -145,6 +145,11 @@ export default {
     line-height: 26px;
     margin-right: 20px;
 }
+@media screen and (max-width: 530px) {
+    .home-header > span{
+        display: none;
+    }
+}
 .home-header .search-back {
     position: absolute;
     left: 0;
