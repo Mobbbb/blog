@@ -26,6 +26,7 @@ export default {
 			appMainStyle: computed(() => {
 				return { 
 					paddingTop: `${store.state.app.navHeight}px`,
+					backgroundImage: `url('${process.env.VUE_APP_HOST}/resource/home-assets/images/bg.jpg')`,
 					backgroundPosition: `0 ${store.state.app.navHeight}px`,
 				}
 			}),
@@ -39,7 +40,6 @@ export default {
 
 <style scoped>
 .app-main{
-	background: url('//mobbbb.top/resource/home-assets/images/bg.jpg');
 	background-size: 100% auto;
 	background-repeat: no-repeat;
 	box-sizing: border-box;

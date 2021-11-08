@@ -4,7 +4,7 @@ const name = 'AMS - Animation.Moive.Summary';
 const outputDir = 'dist';
 const proxyConfig = {
     '/resource': {
-        target: 'http://mobbbb.top',
+        target: `http:${process.env.VUE_APP_HOST}`,
         changOrigin: true,
     },
 };
