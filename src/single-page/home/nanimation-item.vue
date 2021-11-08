@@ -215,6 +215,8 @@ export default {
     margin: 0 0 8px 0;
 }
 .desc-label-wrap {
+    display: flex;
+    flex-wrap: wrap;
     margin-bottom: 4px;
     max-height: 52px;
     font-size: 12px;
