@@ -4,18 +4,20 @@
 		<div class="main-wrap" :style="store.getters['app/mainStyle']">
 			<router-view></router-view>
 		</div>
+		<Debugger v-if="store.state.app.showDebugger"></Debugger>
 	</div>
 </template>
 
 <script>
 import NavMenu from '@/single-page/componnets/nav-menu.vue'
-import { computed } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
   	name: 'App',
 	components: {
 		NavMenu,
+		Debugger: defineAsyncComponent(() => import('./components/debugger.vue')),
 	},
 	setup() {
 		const store = new useStore()

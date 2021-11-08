@@ -1,5 +1,6 @@
 <template>
     <div class="popover-content">
+        <div class="el-popover__title">高级筛选</div>
         <div class="label-wrap" v-if="popoverFilterConfig.allLabelArr">
             <div class="filter-title"># 标签</div>
             <div class="label-item-wrap">
@@ -124,6 +125,9 @@ export default {
 </script>
 
 <style scoped>
+.popover-content {
+    padding: 12px 0;
+}
 .label-wrap {
     padding-left: 12px;
 }
@@ -160,6 +164,10 @@ export default {
 }
 .popover-footer-wrap {
     text-align: right;
+    padding: 0 12px;
+}
+
+.el-popover__title {
     padding: 0 12px;
 }
 

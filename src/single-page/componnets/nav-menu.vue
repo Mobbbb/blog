@@ -14,11 +14,9 @@
             </el-menu>
         
             <el-popover placement="bottom-end"
-                        title="高级筛选"
                         :width="320"
-                        :show-arrow="false"
                         :offset="5"
-                        ref="popoverRef"
+                        :show-arrow="false"
                         trigger="manual"
                         popper-class="search-input-popover"
                         v-model:visible="showFilterContent">
@@ -28,13 +26,14 @@
                         <input  placeholder="请输入剧名" 
                                 @keydown.enter="onEnter"
                                 @focus="onFocus"
+                                @mousedown.stop
                                 type="text"
                                 ref="searchInput"
                                 class="search-input" 
                                 v-model="searchText">
                     </div>
                 </template>
-                <PopoverFilter @on-reset="clickResetBtn" @on-search="clickSearchBtn"></PopoverFilter>
+                <PopoverFilter @on-reset="clickResetBtn" @on-search="clickSearchBtn" @mousedown.stop></PopoverFilter>
             </el-popover>
         </div>
     </div>
@@ -57,7 +56,6 @@ export default {
         return {
             routes,
             showFilterContent: false,
-            popoverEl: null, // 高级筛选面板
             inputEl: null, // 搜索框
         }
     },
@@ -86,7 +84,6 @@ export default {
         },
     },
     mounted() {
-        this.popoverEl = this.$refs.popoverRef.$refs.popperRef
         this.inputEl = this.$refs.searchInput
     },
 	methods: {
@@ -107,13 +104,15 @@ export default {
                 this.showFilterContent = true
                 // 添加隐藏高级筛选的监听器
                 // click事件会出现误触现象——在弹框内长按，并在弹框外mouseup，点击区域会被判定为在弹框之外
-                this.eventListenerHandle('addEventListener')
+                document.addEventListener('mousedown', this.hidePopoverAction)
             }
         },
         hidePopoverAction() {
-            this.showFilterContent = false
-            // 移除监听器
-            this.eventListenerHandle('removeEventListener')
+            if (this.showFilterContent) {
+                this.showFilterContent = false
+                // 移除监听器
+                document.removeEventListener('mousedown', this.hidePopoverAction)
+            }
         },
         clickResetBtn() {
             this.updateInputValue('')
@@ -124,18 +123,6 @@ export default {
         clickSearchBtn() {
             this.searchHandle()
             this.hidePopoverAction()
-        },
-        hidePopoverByEl(e) {
-            if (!e.path.includes(this.popoverEl) && !e.path.includes(this.inputEl)) {
-                this.hidePopoverAction()
-            }
-        },
-        eventListenerHandle(type) {
-            if (config.device === PC) {
-                document[type]('mousedown', this.hidePopoverByEl)
-            } else {
-                document[type]('touchstart', this.hidePopoverByEl)
-            }
         },
 	}
 }
@@ -207,9 +194,6 @@ export default {
     background-color: transparent !important;
 }
 .search-input-popover {
-    padding: 12px 0!important;
-}
-.search-input-popover > .el-popover__title {
-    padding: 0 12px;
+    padding: 0!important;
 }
 </style>

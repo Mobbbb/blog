@@ -14,6 +14,9 @@ const app = {
             searchText: '',
             searchFlag: false,
             activeNavIndex: '',
+
+            debuggerText: '',
+            showDebugger: false,
         }
     },
     getters: {
@@ -44,6 +47,12 @@ const app = {
         updateActiveNavIndex(state, value) {
             state.activeNavIndex = value
         },
+        updateDebuggerText(state, value) {
+            state.debuggerText = value
+        },
+        updateDebuggerShowStatus(state, value) {
+            state.showDebugger = value
+        },
     },
     actions: {
         searchHandle({ state, rootGetters, commit, dispatch }) {
@@ -52,7 +61,9 @@ const app = {
 
             if (!searchRouteList.includes(name)) return
 
-            if (state.searchText.trim() === '' && !rootGetters[`${name}/hasSelectedFilter`]) {
+            if (state.searchText === 'MOBBBB') {
+                commit('updateDebuggerShowStatus', true)
+            } else if (state.searchText.trim() === '' && !rootGetters[`${name}/hasSelectedFilter`]) {
                 commit('updateSearchFlag', false)
             } else {
                 commit('updateSearchFlag', true)
