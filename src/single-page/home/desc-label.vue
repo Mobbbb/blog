@@ -14,9 +14,10 @@ export default {
 
 <style scoped>
 .desc-label {
+    height: 22px;
+    line-height: normal;
     min-width: 46px;
     max-width: 100%;
-    line-height: normal;
     font-size: 12px;
     padding: 2px 8px;
     border: 1px solid #f0f0f0;
