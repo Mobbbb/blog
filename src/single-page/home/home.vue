@@ -1,5 +1,5 @@
 <template>
-    <div class="home-wrap">
+    <div class="home-wrap mobile-wrap">
         <HomeHeader></HomeHeader>
         <div class="home-content" v-loading="isLoading">
             <template v-if="showAnimationList.length">
@@ -12,13 +12,11 @@
             </template>
             <el-empty :description="isLoading ? ' ' : '暂无数据'" v-else></el-empty>
         </div>
-		<FooterTools v-if="!searchFlag"></FooterTools>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
-import FooterTools from '@/single-page/componnets/footer-tools.vue'
 import AnimationItem from './nanimation-item.vue'
 import HomeHeader from './home-header.vue'
 
@@ -27,7 +25,6 @@ export default {
     components: {
         AnimationItem,
         HomeHeader,
-        FooterTools,
     },
     computed: {
         ...mapState('home', [

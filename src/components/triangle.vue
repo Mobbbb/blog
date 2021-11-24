@@ -19,6 +19,8 @@ export default {
     display: inline-block;
     transform: rotate(-135deg);
     position: absolute;
+    bottom: 0;
+    right: 0;
     margin: 0 -5px -5px 0;
     cursor: pointer;
 }

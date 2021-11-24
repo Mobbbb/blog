@@ -1,0 +1,39 @@
+@media screen and (max-width: 530px) {
+    /* 主体容器 */
+    /* App.vue */
+    .main-wrap {
+        width: calc(100% - 48px)!important;
+		margin-right: 24px!important;
+		margin-left: 24px!important;
+    }
+    .mobile-wrap {
+        padding-left: 12px!important;
+        padding-right: 12px!important;
+    }
+
+    /* 导航栏 */
+    /* nav-menu.vue */
+    .page-nav-wrap {
+        width: 100%!important;
+    }
+
+    /* 安装按钮 */
+    /* Install.vue */
+    .install-wrap {
+        padding: 8px 10px!important;
+        right: 8px!important;
+        bottom: 40px!important;
+    }
+    .install-plus {
+        font-size: 12px!important;
+    }
+
+    /* 首页的内容标题 */
+    /* home-header.vue */
+    .home-header a {
+        margin-right: 14px!important;
+    }
+    .home-header-title{
+        display: none!important;
+    }
+}

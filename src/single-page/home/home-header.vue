@@ -145,11 +145,6 @@ export default {
     line-height: 26px;
     margin-right: 20px;
 }
-@media screen and (max-width: 530px) {
-    .home-header-title{
-        display: none;
-    }
-}
 .home-header .search-back {
     position: absolute;
     left: 0;
@@ -173,6 +168,9 @@ export default {
     position: relative;
     vertical-align: top;
     display: inline-block;
+}
+.home-header a:last-of-type {
+    margin-right: 0;
 }
 .home-header a:hover {
     color: #00a1d6;

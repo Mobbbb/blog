@@ -42,7 +42,6 @@
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { routes } from '@/router'
-import config, { PC } from '@/config'
 import DescLabel from '@/single-page/home/desc-label.vue'
 import PopoverFilter from './popover-filter.vue'
 
@@ -142,11 +141,6 @@ export default {
     position: relative;
     overflow: hidden;
 	margin: 0 auto;
-}
-@media screen and (max-width: 530px) {
-    .page-nav-wrap {
-        width: 100%!important;
-    }
 }
 .search-input-wrap {
     position: absolute;

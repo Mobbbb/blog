@@ -186,7 +186,7 @@ export const filterDataByOthersCheck = (checkArr, data) => {
     }
     // 过滤未评分数据
     if (checkArr.includes(unratedConfig.value)) {
-        filterData = excludeUnratedItem(data)
+        filterData = excludeUnratedItem(filterData)
     }
 
     return filterData

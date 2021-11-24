@@ -1,10 +1,11 @@
 'use strict';
 
 const name = 'AMS - Animation.Moive.Summary';
+const shortName = 'AMS';
 const outputDir = 'dist';
 const proxyConfig = {
     '/resource': {
-        target: `http:${process.env.VUE_APP_HOST}`,
+        target: `https:${process.env.VUE_APP_HOST}`,
         changOrigin: true,
     },
 };
@@ -13,6 +14,7 @@ const path = require('path');
 const resourceConfig = require('./src/config/resource.js');
 const PrerenderSPAPlugin = require('prerender-spa-plugin');
 const WebpackBundleAnalyzer = require('webpack-bundle-analyzer');
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const Renderer = PrerenderSPAPlugin.PuppeteerRenderer;
 const BundleAnalyzer = WebpackBundleAnalyzer.BundleAnalyzerPlugin;
@@ -65,9 +67,30 @@ module.exports = {
                     server: {
                         proxy: proxyConfig,
                     },
-                }),
+                })
             )
         }
+
+        config.plugins.push(
+            new CopyWebpackPlugin({
+                patterns: [
+                    {
+                        from: path.resolve(__dirname, './sw.js'),
+                        to: path.resolve(__dirname, './dist'),
+                        globOptions: {
+                            ignore: ['.*'],
+                        }
+                    },
+                    {
+                        from: path.resolve(__dirname, './manifest.json'),
+                        to: path.resolve(__dirname, './dist'),
+                        globOptions: {
+                            ignore: ['.*'],
+                        }
+                    }
+                ],
+            })
+        )
         
         return {
             resolve: {
@@ -84,7 +107,8 @@ module.exports = {
         if (process.env.NODE_ENV === 'production') {
             // 生产环境下注入在html模板注入cdn
             config.plugin('html').tap(args => {
-                args[0].title= name
+                args[0].title = name
+                args[0].shortName = shortName
                 args[0].resourceConfig = resourceConfig
                 return args
             })

@@ -8,7 +8,12 @@ const app = {
             mainGap: [32, 0, 8, 0],
             mainWidth: {
                 width: 0.62,
-                minWidth: 400,
+                minWidth: 332,
+            },
+
+            installConfig: {
+                appPromptEvent: null,
+                showBtn: false,
             },
 
             searchText: '',
@@ -53,6 +58,12 @@ const app = {
         updateDebuggerShowStatus(state, value) {
             state.showDebugger = value
         },
+        setAppPromptEvent(state, event) {
+            state.installConfig.appPromptEvent = event
+        },
+        setInstallBtnShowStatus(state, status) {
+            state.installConfig.showBtn = status
+        },
     },
     actions: {
         searchHandle({ state, rootGetters, commit, dispatch }) {
@@ -77,6 +88,21 @@ const app = {
         resetFilterHandle({ commit }) {
             const { name } = router.currentRoute.value
             commit(`${name}/resetSelectedFilter`, {}, { root: true })
+        },
+        registerServiceWorker({ commit }) {
+            window.addEventListener('load', function() {
+				if ('serviceWorker' in navigator) {
+					navigator.serviceWorker.register('./sw.js')
+				}
+				window.addEventListener('beforeinstallprompt', (event) => { // 若当前未安装
+					event.preventDefault()
+					commit('setAppPromptEvent', event)
+					commit('setInstallBtnShowStatus', true)
+				})
+				window.addEventListener('appinstalled', () => { // 已安装
+					commit('setInstallBtnShowStatus', false)
+				})
+			})
         },
     },
 }

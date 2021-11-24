@@ -5,6 +5,7 @@ import router from './router'
 import store from './store'
 import './libs/index.js'
 import './styles/index.css'
+import './styles/media.css'
 
 if (process.env.NODE_ENV !== 'production') {
     require('element-plus/lib/theme-chalk/index.css')

@@ -1,5 +1,5 @@
 <template>
-    <div class="article-item-wrap" @click="jumpToDetail">
+    <div class="article-item-wrap mobile-wrap" @click="jumpToDetail">
         <div class="article-title">
             <span>{{params.title}}</span>
             <div class="article-type-wrap">

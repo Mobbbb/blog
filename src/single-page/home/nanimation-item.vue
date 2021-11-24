@@ -232,6 +232,7 @@ export default {
     margin-bottom: 2px;
     overflow: hidden;
     transform: scale(1, 0.5);
+    flex-shrink: 0;
 }
 .more-label:hover {
     cursor: pointer;

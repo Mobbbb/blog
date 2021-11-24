@@ -1,28 +1,48 @@
 <template>
-	<div class="app-main" :style="appMainStyle" @click="handleSelect">
+	<div class="app-main" :style="appMainStyle" @click="handleSelect" @touchmove.self.prevent>
 		<NavMenu></NavMenu>
-		<div class="main-wrap" :style="store.getters['app/mainStyle']">
+		<div class="main-wrap" :style="mainWrapStyle">
 			<router-view></router-view>
+			
+			<FooterTools v-if="showFooterTools"></FooterTools>
+			<Install v-if="showInstall"></Install>
 		</div>
-		<Debugger v-if="store.state.app.showDebugger"></Debugger>
+		<Debugger v-if="showDebugger"></Debugger>
 	</div>
 </template>
 
 <script>
 import NavMenu from '@/single-page/componnets/nav-menu.vue'
-import { computed, defineAsyncComponent } from 'vue'
+import FooterTools from '@/single-page/componnets/footer-tools.vue'
+import { computed, defineAsyncComponent, onMounted } from 'vue'
 import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
+import { homeRoute } from '@/router'
 
 export default {
   	name: 'App',
 	components: {
 		NavMenu,
+        FooterTools,
 		Debugger: defineAsyncComponent(() => import('./components/debugger.vue')),
+		Install: defineAsyncComponent(() => import('./components/install.vue')),
 	},
 	setup() {
+		const route = useRoute()
 		const store = new useStore()
+		const registerServiceWorker = () => store.dispatch('app/registerServiceWorker')
+
+		onMounted(() => {
+			registerServiceWorker()
+		})
+		
 		return {
-			store,
+			showFooterTools: computed(() => {
+				return !store.state.app.searchFlag && route.name === homeRoute.name
+			}),
+			showInstall: computed(() => store.state.app.installConfig.showBtn),
+			showDebugger: computed(() => store.state.app.showDebugger),
+			mainWrapStyle: computed(() => store.getters['app/mainStyle'] ),
 			appMainStyle: computed(() => {
 				return { 
 					paddingTop: `${store.state.app.navHeight}px`,
@@ -32,9 +52,6 @@ export default {
 			}),
 		}
 	},
-	methods: {
-		
-	}
 }
 </script>
 
@@ -52,7 +69,7 @@ export default {
 	box-sizing: border-box;
 	background: #fff;
 	box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
-	overflow-y: auto;
 	border-radius: 2px;
+	position: relative;
 }
 </style>

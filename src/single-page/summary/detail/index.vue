@@ -1,5 +1,5 @@
 <template>
-    <div class="summary-detail-wrap">
+    <div class="summary-detail-wrap mobile-wrap">
         <div class="detail-title">{{detailData.title}}</div>
         <BannerTag :params="detailData"></BannerTag>
         <Content :params="formatData"></Content>
@@ -60,6 +60,9 @@ export default {
     font-size: 14px;
     line-height: 1.6;
     color: #404040;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 .detail-title {
     font-size: 28px;
