@@ -1,23 +1,24 @@
-'use strict';
+'use strict'
 
-const name = 'AMS - Animation.Moive.Summary';
-const shortName = 'AMS';
-const outputDir = 'dist';
+const name = 'AMS - Animation.Moive.Summary'
+const shortName = 'AMS'
+const outputDir = 'dist'
 const proxyConfig = {
     '/resource': {
         target: `https:${process.env.VUE_APP_HOST}`,
         changOrigin: true,
     },
-};
+}
 
-const path = require('path');
-const resourceConfig = require('./src/config/resource.js');
-const PrerenderSPAPlugin = require('prerender-spa-plugin');
-const WebpackBundleAnalyzer = require('webpack-bundle-analyzer');
+const path = require('path')
+const resourceConfig = require('./src/config/resource.js')
+const PrerenderSPAPlugin = require('prerender-spa-plugin')
+const WebpackBundleAnalyzer = require('webpack-bundle-analyzer')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const optimize = require('./webpack/SWFilePlugin.js')
 
-const Renderer = PrerenderSPAPlugin.PuppeteerRenderer;
-const BundleAnalyzer = WebpackBundleAnalyzer.BundleAnalyzerPlugin;
+const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
+const BundleAnalyzer = WebpackBundleAnalyzer.BundleAnalyzerPlugin
 
 function resolve(dir) {
     return path.join(__dirname, dir)
@@ -43,8 +44,8 @@ module.exports = {
     },
 
     configureWebpack: (config) => {
-        // config.output.filename = 'static/js/[name].[hash].js'; // 入口文件chunk的命名
-        // config.output.chunkFilename = 'static/js/[name].[hash].js'; // 除入口文件外的chunk的命名
+        // config.output.filename = 'static/js/[name].[hash].js' // 入口文件chunk的命名
+        // config.output.chunkFilename = 'static/js/[name].[hash].js' // 除入口文件外的chunk的命名
         if (process.env.NODE_ENV === 'production') { // 打包时使用cdn
             config.externals = {
                 'vue': 'Vue',
@@ -79,14 +80,20 @@ module.exports = {
                         to: path.resolve(__dirname, './dist'),
                         globOptions: {
                             ignore: ['.*'],
-                        }
+                        },
+                        transform(content, absoluteFrom, compilation) {
+                            return optimize(content, compilation, {
+                                precacheList: (assets) => JSON.stringify(assets),
+                                precacheName: `\'precache-${(new Date()).getTime()}\'`,
+                            })
+                        },
                     },
                     {
                         from: path.resolve(__dirname, './manifest.json'),
                         to: path.resolve(__dirname, './dist'),
                         globOptions: {
                             ignore: ['.*'],
-                        }
+                        },
                     }
                 ],
             })
@@ -114,4 +121,4 @@ module.exports = {
             })
         }
     },
-};
+}
