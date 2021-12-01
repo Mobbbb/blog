@@ -285,7 +285,7 @@ export const getSplitListByLanguage = (str, list = [], splitKey) => {
     mapList.forEach(item => {
         if (item.value.indexOf(splitKey) > -1) {
             const language = splitKey.slice(1, splitKey.length - 1)
-            let reg = new RegExp(eval('/{' + language + '}.+?{\\/' + language + '}/g')) // /\{js}.*?\{\/js}/g
+            let reg = new RegExp(eval('/{' + language + '}.+?{\\/' + language + '}/g')) // /\{js}.+?\{\/js}/g
             let splitLineOfContent = item.value.split(reg)
             let splitLineOfCode = item.value.match(reg)
             

@@ -68,7 +68,7 @@ const app = {
     actions: {
         searchHandle({ state, rootGetters, commit, dispatch }) {
             const { name } = router.currentRoute.value
-            const searchRouteList = [homeRoute.name, movieRoute.name, summaryRoute.name]
+            const searchRouteList = [homeRoute.name, movieRoute.name]
 
             if (!searchRouteList.includes(name)) return
 
@@ -92,7 +92,7 @@ const app = {
         registerServiceWorker({ commit }) {
             window.addEventListener('load', function() {
 				if ('serviceWorker' in navigator) {
-					navigator.serviceWorker.register('./sw.js')
+					navigator.serviceWorker.register('/sw.js')
 				}
 				window.addEventListener('beforeinstallprompt', (event) => { // 若当前未安装
 					event.preventDefault()

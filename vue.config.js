@@ -7,6 +7,7 @@ const proxyConfig = {
     '/resource': {
         target: `https:${process.env.VUE_APP_HOST}`,
         changOrigin: true,
+        secure: false, // 关闭ssl证书验证
     },
 }
 
@@ -15,7 +16,7 @@ const resourceConfig = require('./src/config/resource.js')
 const PrerenderSPAPlugin = require('prerender-spa-plugin')
 const WebpackBundleAnalyzer = require('webpack-bundle-analyzer')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const optimize = require('./webpack/SWFilePlugin.js')
+const { InjectManifest } = require('workbox-webpack-plugin')
 
 const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
 const BundleAnalyzer = WebpackBundleAnalyzer.BundleAnalyzerPlugin
@@ -81,12 +82,6 @@ module.exports = {
                         globOptions: {
                             ignore: ['.*'],
                         },
-                        transform(content, absoluteFrom, compilation) {
-                            return optimize(content, compilation, {
-                                precacheList: (assets) => JSON.stringify(assets),
-                                precacheName: `\'precache-${(new Date()).getTime()}\'`,
-                            })
-                        },
                     },
                     {
                         from: path.resolve(__dirname, './manifest.json'),
@@ -96,6 +91,14 @@ module.exports = {
                         },
                     }
                 ],
+            })
+        )
+
+        config.plugins.push(
+            new InjectManifest({
+                swSrc: './sw.js',
+                swDest: 'sw.js',
+                importWorkboxFrom: 'disabled', // 关闭自动注入workbox-sw.js
             })
         )
         
