@@ -17,7 +17,7 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
-import AnimationItem from './nanimation-item.vue'
+import AnimationItem from './card-item/index.vue'
 import HomeHeader from './home-header.vue'
 
 export default {
@@ -61,6 +61,7 @@ export default {
 }
 .home-content {
     padding: 20px 0 0 20px;
+    position: relative;
 }
 .home-content::after {
     content: '';

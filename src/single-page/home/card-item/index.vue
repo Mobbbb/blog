@@ -1,35 +1,24 @@
 <template>
-    <div class="animation-item">
+    <div class="animation-item" ref="animationItem">
         <div class="image-wrap">
-            <img :src="data.cover" :alt="data.showName">
-            <div class="image-label image-left-label" v-if="searchFlag">{{data.years}}</div>
-            <div class="image-label image-right-label" v-if="searchFlag">{{data.month}}月</div>
+            <img :src="data.cover" :style="imgStyle" :alt="data.showName">
+            <div class="movie-versions-icon" @click.stop="clickExtraChapter" v-if="data.movieVersions">番外</div>
+            <div class="image-label image-right-label" v-if="searchFlag">{{data.years}}</div>
+            <div class="image-label image-bottom-label" v-if="searchFlag">{{data.month}}月</div>
+            <ExtraChapter :list="extraChapterList" 
+                          :imgWidth="imgWidth" 
+                          :mode="extraChapterShowMode"
+                          v-if="data.movieVersions" 
+                          @click.stop>
+            </ExtraChapter>
         </div>
         <div class="animation-item-right">
             <el-tooltip :disabled="data.tooltipDisabled" :content="data.showName" placement="top">
                 <h4 class="animation-item-title paddingLeft4" ref="titleRef">{{data.showName}}</h4>
             </el-tooltip>
-            <!--<div class="animation-item-desc paddingLeft4">{{}}</div>-->
             <div class="desc-label-wrap" ref="labelWrapRef">
                 <template v-for="cell in data.label" :key="cell.name">
-                    <el-popover
-                        ref="popover"
-                        placement="top"
-                        :width="200"
-                        trigger="hover" 
-                        v-if="cell.type === 'more'">
-                        <DescLabel  v-for="label in data.hoverShowLabel" 
-                                    :marginRight="descLabelMarginRight" 
-                                    :name="label"
-                                    :key="label">
-                        </DescLabel>
-                        <template #reference>
-                            <div class="more-label" :style="{ width: `${moreLabelWidth}px` }">
-                                <i class="el-icon-more"></i>
-                            </div>
-                        </template>
-                    </el-popover>
-
+                    <MoreLabel v-if="cell.type === 'more'" :data="data" :style="labelStyle"></MoreLabel>
                     <DescLabel v-else :marginRight="descLabelMarginRight" :name="cell.name"></DescLabel>
                 </template>
             </div>
@@ -47,27 +36,43 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import DescLabel from './desc-label.vue'
+import MoreLabel from './more-label.vue'
 
 const descLabelMarginRight = 4
 const moreLabelWidth = 20
+const imgWidth = 109
+const labelStyle = {
+    moreLabelWidth,
+    descLabelMarginRight,
+}
 
 export default {
     name: 'animation-item',
     props: ['data', 'searchFlag', 'listData'],
     components: {
         DescLabel,
+        MoreLabel,
+		ExtraChapter: defineAsyncComponent(() => import('./extra-chapter.vue')),
     },
     data() {
         return {
-            moreLabelWidth,
             descLabelMarginRight,
+            labelStyle,
+            imgWidth,
+            extraChapterList: [],
+            extraChapterShowMode: '',
         }
     },
     computed: {
         episodes() {
             return Number.isFinite(Number(this.data.episodes)) ? `共${this.data.episodes}话` : '连载中'
+        },
+        imgStyle() {
+            return {
+                width: `${this.imgWidth}px`,
+            }
         },
     },
     mounted() {
@@ -77,6 +82,37 @@ export default {
         })
     },
     methods: {
+        hideExtraChapter() {
+            this.extraChapterList = []
+            document.removeEventListener('click', this.hideExtraChapter)
+        },
+        clickExtraChapter() { // 显示番外列表
+            if (!this.extraChapterList.length) {
+                this.genExtraChapterPosition()
+                this.extraChapterList = this.data.movieVersions
+                document.addEventListener('click', this.hideExtraChapter)
+            }
+        },
+        genExtraChapterPosition() {
+            const offsetLeft = this.$refs.animationItem.offsetLeft + this.imgWidth / 2
+            const offsetTop = this.$refs.animationItem.offsetTop + 165 / 2
+            const { 
+                clientWidth: homeContentWidth,
+                clientHeight: homeContentHeight, 
+            } = this.$refs.animationItem.parentNode
+
+            if (homeContentWidth <= 360 && offsetTop > homeContentHeight / 2 && offsetTop > 165) {
+                // 容器宽度小于360、图片中心处于下半区域、上方空间充足
+                this.extraChapterShowMode = 'top'
+            } else if (homeContentWidth <= 360 && (offsetTop <= homeContentHeight / 2 || offsetTop <= 165)) {
+                // 容器宽度小于360、（图片中心处于上半区域 或 上方空间不足）
+                this.extraChapterShowMode = 'bottom'
+            } else if (offsetLeft > homeContentWidth / 2) {
+                this.extraChapterShowMode = 'left'
+            } else {
+                this.extraChapterShowMode = 'right'
+            }
+        },
         /**
          * @description 标题悬浮是否出现tooltip
          */
@@ -93,7 +129,7 @@ export default {
          */
         computedCurrentShowListLabelConfig() {
             this.getCurrentShowListLabelPos()
-            this.insertNumberInLabelLineEnd(1)
+            this.insertNumberInLabelLineEnd()
         },
         getCurrentShowListLabelPos() {
             const wrapWidth = this.$refs.labelWrapRef && this.$refs.labelWrapRef.clientWidth
@@ -172,26 +208,57 @@ export default {
 }
 .image-label {
     position: absolute;
-    top: 0;
     font-size: 12px;
     height: 20px;
     line-height: 20px;
     padding: 0 6px;
     color: #fff;
 }
-.image-left-label {
-    left: 0;
-    background: rgb(251, 114, 153);
-    border-radius: 4px 0 4px 0;
-}
 .image-right-label {
+    right: 0;
+    top: 0;
+    background: rgb(251, 114, 153);
+    border-radius: 0 4px 0 4px;
+}
+.image-bottom-label {
+    bottom: 0;
     right: 0;
     background: rgb(0, 192, 255);
     border-radius: 0 4px 0 4px;
 }
+.movie-versions-icon {
+    width: 50px;
+    height: 36px;
+    line-height: 42px;
+    top: -17px;
+    left: -10px;
+    position: absolute;
+    background: url("//mobbbb.top/resource/home-assets/images/movie-versions-icon.png");
+    background-size: 100% 100%;
+    font-weight: 700;
+    padding-left: 6px;
+    box-sizing: border-box;
+    font-size: 12px;
+    letter-spacing: 1px;
+    z-index: 10;
+}
+.movie-versions-icon:hover {
+    cursor: pointer;
+}
+.card-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.card-animation div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+}
 .image-wrap img {
     display: block;
-    width: 109px;
     height: 140px;
     overflow: hidden;
     text-decoration: none;
@@ -221,21 +288,6 @@ export default {
     max-height: 52px;
     font-size: 12px;
     overflow: hidden;
-}
-.more-label {
-    height: 16px;
-    line-height: 16px;
-    font-size: 12px;
-    display: inline-block;
-    color: #c0c0c0;
-    text-align: center;
-    margin-bottom: 2px;
-    overflow: hidden;
-    transform: scale(1, 0.5);
-    flex-shrink: 0;
-}
-.more-label:hover {
-    cursor: pointer;
 }
 .animation-item-desc {
     display: -webkit-box;
