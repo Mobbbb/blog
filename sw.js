@@ -221,10 +221,6 @@ self.addEventListener("error", function(event) {
     console.error("出错")
     console.dir(event)
 })
-self.addEventListener("unhandledrejection", function(event) {
-    console.error("Promise出错")
-    console.dir(event)
-})
 self.addEventListener("message", function(event) {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting()

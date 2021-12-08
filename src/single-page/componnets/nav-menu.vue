@@ -42,13 +42,11 @@
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { routes } from '@/router'
-import DescLabel from '@/single-page/home/desc-label.vue'
 import PopoverFilter from './popover-filter.vue'
 
 export default {
   	name: 'nav-menu',
     components: {
-        DescLabel,
         PopoverFilter,
     },
     data() {

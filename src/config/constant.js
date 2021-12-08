@@ -85,7 +85,14 @@ export const unratedConfig = {
     value: '1',
 }
 
-export const othersCheckConfig = [terminationConfig]
+export const tvPlayConfig = {
+    label: '显示电视剧',
+    value: 'tv',
+}
+
+export const othersCheckConfig = [terminationConfig, tvPlayConfig]
+
+export const defaultHiddenType = [tvPlayConfig.value]
 
 export const summaryTypeMap = {
     TEXT: 'text',

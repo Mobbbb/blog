@@ -1,5 +1,5 @@
 import { descendingOrder, ascendingOrder } from './util'
-import { burstScore, minusScore, terminationConfig, unratedConfig, textTypeMap, summaryTypeMap } from '@/config/constant'
+import { burstScore, minusScore, terminationConfig, tvPlayConfig, unratedConfig, textTypeMap, summaryTypeMap } from '@/config/constant'
 
 export const homeTotalScore = 5
 export const movieTotalScore = 10
@@ -188,8 +188,23 @@ export const filterDataByOthersCheck = (checkArr, data) => {
     if (checkArr.includes(unratedConfig.value)) {
         filterData = excludeUnratedItem(filterData)
     }
+    // 筛选电视剧
+    if (checkArr.includes(tvPlayConfig.value)) {
+        filterData = includeTvPlayItem(filterData)
+    }
 
     return filterData
+}
+
+/**
+ * @description 过滤电视剧数据
+ * @param {*} data 
+ * @returns 
+ */
+export const includeTvPlayItem = (data) => {
+    return data.filter(item => {
+        return item.type === 'tv'
+    })
 }
 
 /**
