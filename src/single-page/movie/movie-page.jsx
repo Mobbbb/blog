@@ -45,7 +45,8 @@ export default defineComponent({
 					<el-table-column prop="score" label="评分" width="80" sortable align="center"></el-table-column>
 					<el-table-column prop="years" label="年份" width="80"></el-table-column>
 					<el-table-column prop="country" label="国家" width="80"></el-table-column>
-					<el-table-column prop="comment" label="评论" width="180"></el-table-column>
+					<el-table-column prop="actors" label="主演" width="110" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="comment" label="评论" width="180" show-overflow-tooltip></el-table-column>
 				</el-table>
 			</div>
 		)

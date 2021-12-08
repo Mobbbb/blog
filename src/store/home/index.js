@@ -2,7 +2,12 @@ import {
     othersCheckConfig,
     hideScoreConfig, 
     sortListConfig, 
-    homeRateScoreConfig, January, dateType, scoreType } from '@/config/constant.js'
+    homeRateScoreConfig, 
+    January, 
+    dateType, 
+    scoreType,
+    defaultHiddenType,
+} from '@/config/constant.js'
 import { 
     initHomeListData,
     sortDataByDateHandle,
@@ -70,9 +75,11 @@ const home = {
                 return getters.currentBlockData
             }
         },
-        currentBlockData(state) {
+        currentBlockData(state) { // 常规展示的年-月数据项
             const currentTimeData = state.animationList.filter((item) => {
-                return item.years === state.selectedYears && item.month === state.activeMonth
+                return item.years === state.selectedYears 
+                    && item.month === state.activeMonth 
+                    && !defaultHiddenType.includes(item.type)
             })
 
             // 过滤页脚的筛选项
