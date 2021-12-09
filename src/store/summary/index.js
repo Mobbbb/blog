@@ -10,7 +10,11 @@ const summary = {
         }
     },
     getters: {
-        
+        showArticleList(state) {
+            return state.articleList.filter((item) => {
+                return item.showDefault !== false
+            })
+        },
     },
     mutations: {
         setArticleList(state, value) {

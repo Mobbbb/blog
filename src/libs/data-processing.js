@@ -1,8 +1,24 @@
 import { descendingOrder, ascendingOrder } from './util'
-import { burstScore, minusScore, terminationConfig, tvPlayConfig, unratedConfig, textTypeMap, summaryTypeMap } from '@/config/constant'
+import { 
+    burstScore, 
+    minusScore, 
+    terminationConfig,
+    tvPlayConfig, 
+    extraChapterConfig,
+    unratedConfig, 
+    textTypeMap, 
+    summaryTypeMap,
+} from '@/config/constant'
 
 export const homeTotalScore = 5
 export const movieTotalScore = 10
+
+export const imgConfig = {
+    rectItemHeight: 165,
+    width: 109,
+    height: 140,
+    gap: 8,
+}
 
 export const initHomeListData = (scoreMap, data) => {
     const allLabelArr = []
@@ -192,12 +208,27 @@ export const filterDataByOthersCheck = (checkArr, data) => {
     if (checkArr.includes(tvPlayConfig.value)) {
         filterData = includeTvPlayItem(filterData)
     }
+    // 筛选番外
+    if (checkArr.includes(extraChapterConfig.value)) {
+        filterData = includeExtraChapterItem(filterData)
+    }
 
     return filterData
 }
 
 /**
- * @description 过滤电视剧数据
+ * @description 筛选番外数据
+ * @param {*} data 
+ * @returns 
+ */
+export const includeExtraChapterItem = (data) => {
+    return data.filter(item => {
+        return item.movieVersions && item.movieVersions.length
+    })
+}
+
+/**
+ * @description 筛选电视剧数据
  * @param {*} data 
  * @returns 
  */
@@ -229,6 +260,10 @@ export const excludeTerminationItem = (data) => {
     })
 }
 
+/**
+ * @description 总结页数据初始化处理
+ * @param {*} data 
+ */
 export const initSummaryListData = (data) => {
     data.forEach((item, index) => {
         item.ellipsisContent = ''
@@ -248,6 +283,12 @@ export const initSummaryListData = (data) => {
     data.sort(descendingOrder('timestamp'))
 }
 
+/**
+ * @description 代码/文字片段切割
+ * @param {*} content 
+ * @param {*} splitLanguageList 
+ * @returns 
+ */
 export const formatSummaryContent = (content, splitLanguageList) => {
     const formatDataList = []
     if (content.type === summaryTypeMap.TEXT) { // 文本
@@ -324,4 +365,42 @@ export const getSplitListByLanguage = (str, list = [], splitKey) => {
     })
 
     return lineList
+}
+
+/**
+ * @description home页计算弹出的图片位置
+ * @param {*} homeNode 
+ * @param {*} CardItemNode 
+ * @param {*} showNum 
+ * @returns 
+ */
+export const genExtraChapterShowMode = (homeNode, CardItemNode, showNum) => {
+    let mode = ''
+    const { offsetLeft, offsetTop } = CardItemNode
+    const { 
+        clientWidth: homeContentWidth,
+        clientHeight: homeContentHeight, 
+    } = homeNode
+    const { width: imgWidth, height: imgHeight ,gap } = imgConfig
+    const offsetRight = homeContentWidth - offsetLeft - imgWidth
+    const offsetBottom = homeContentHeight - offsetTop - imgHeight
+
+    const isThereRoomLR = Math.max(offsetLeft, offsetRight) > (imgWidth + gap) * showNum
+    const isThereRoomRight = offsetRight > (imgWidth + gap) * showNum
+    const isThereRoomBottom = offsetBottom > (imgHeight + gap) * showNum
+    const isThereRoomTop = offsetTop > (imgHeight + gap) * showNum
+
+    if (!isThereRoomLR && isThereRoomBottom) {
+        mode = 'bottom'
+    } else if (!isThereRoomLR && !isThereRoomBottom && isThereRoomTop) {
+        mode = 'top'
+    } else if (!isThereRoomLR && !isThereRoomBottom && !isThereRoomTop) {
+        mode = 'bottom'
+    } else if (isThereRoomLR && isThereRoomRight) {
+        mode = 'right'
+    } else {
+        mode = 'left'
+    }
+
+    return mode
 }

@@ -11,70 +11,101 @@
              v-for="(item, index) in list" 
              :key="index" 
              :data-index="index"
-             :style="{ width: `${imgWidth}px`, zIndex: list.length - index }" >
+             :style="{ width: `${imgConfig.width}px`, zIndex: list.length - index }" >
             <img class="extra-chapter-img" :style="imgStyle" :src="item.cover" alt="item.name">
             <div class="image-label image-right-label">{{item.years}}</div>
             <div class="image-label image-bottom-label">{{item.month}}月</div>
-            <div class="extra-chapter-title">{{item.name}}</div>
+            <el-tooltip :content="item.name" placement="top">
+                <div class="extra-chapter-title">{{item.name}}</div>
+            </el-tooltip>
         </div>
     </transition-group>
 </template>
 
 <script>
 import { gsap } from 'gsap'
+import { imgConfig } from '@/libs/data-processing'
 
-const rectItemHeight = 165
-const imgGap = 8
+const transMode = {
+    left: 'right',
+    right: 'left',
+}
 
 export default {
     name: 'extra-chapter',
-    props: ['list', 'imgWidth', 'mode'],
+    props: ['list', 'mode'],
     data() {
         return {
-            rectItemHeight,
+            imgConfig,
         }
     },
     computed: {
         imgStyle() {
             return {
-                width: `${this.imgWidth}px`,
+                width: `${this.imgConfig.width}px`,
+                height: `${this.imgConfig.height}px`,
             }
+        },
+        isLR() {
+            return this.mode === 'right' || this.mode === 'left'
+        },
+        extraChapterWidth() {
+            return this.imgConfig.width + this.imgConfig.gap
+        },
+        extraChapterHeight() {
+            return this.imgConfig.rectItemHeight + this.imgConfig.gap
         },
         groupStyle() {
-            return {
-                zIndex: this.list.length ? 11 : 9,
-                left: `${this.imgWidth + imgGap}px`,
+            const style = {
+                zIndex: this.list.length ? 11 : 9
             }
-        },
-    },
-    mounted() {
 
+            if (this.isLR) {
+                style.top = 0
+                style[transMode[this.mode]] = `${this.extraChapterWidth}px`
+            } else {
+                style.left = 0
+                style[this.mode] = 0
+            }
+            
+            return style
+        },
     },
     methods: {
         beforeEnter(el) {
-            el.style.left = 0
             el.style.height = 0
             el.style.opacity = 0
         },
         enter(el, done) {
-            gsap.to(el, {
-                height: this.rectItemHeight,
-                opacity: 1,
-                delay: 0,
-                duration: 0.2,
-                onComplete: () => {
-                    gsap.to(el, {
-                        left: el.dataset.index * (this.imgWidth + imgGap) + 'px',
-                        delay: 0,
-                        onComplete: done
-                    })
+            this.showListByMode(el, done)
+        },
+        showListByMode(el, done) {
+            if (this.isLR) {
+                gsap.to(el, {
+                    height: this.imgConfig.rectItemHeight,
+                    opacity: 1,
+                    duration: 0.2,
+                    onComplete: () => {
+                        const config = { onComplete: done }
+                        config[transMode[this.mode]] = `${el.dataset.index * (this.extraChapterWidth)}px`,
+                        gsap.to(el, config)
+                    }
+                })
+            } else {
+                const config = {
+                    height: this.imgConfig.rectItemHeight,
+                    opacity: 1,
+                    onComplete: done,
                 }
-            })
+                config[this.mode] = `-${(parseInt(el.dataset.index) + 1) * (this.extraChapterHeight)}px`
+                gsap.to(el, config)
+            }
         },
         leave(el, done) {
             gsap.to(el, {
                 opacity: 0,
                 height: 0,
+                top: 0,
                 delay: 0,
                 onComplete: done
             })
@@ -87,8 +118,7 @@ export default {
 .extra-chapter-wrap {
     position: absolute;
     width: 100%;
-    height: 100%;
-    top: 0;
+    height: 1px;
 }
 .extra-chapter-item {
     background: #f8f8f8;
@@ -97,7 +127,6 @@ export default {
     box-sizing: border-box;
     box-shadow: 3px 3px 8px #c8c8c8;
     position: absolute;
-    top: 0;
 }
 .extra-chapter-item:hover {
     cursor: auto;
@@ -115,7 +144,6 @@ export default {
 }
 .extra-chapter-img {
     display: block;
-    height: 140px;
     overflow: hidden;
     text-decoration: none;
     border-bottom: 1px solid rgb(0 0 0 / 10%);

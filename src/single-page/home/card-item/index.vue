@@ -6,7 +6,6 @@
             <div class="image-label image-right-label" v-if="searchFlag">{{data.years}}</div>
             <div class="image-label image-bottom-label" v-if="searchFlag">{{data.month}}月</div>
             <ExtraChapter :list="extraChapterList" 
-                          :imgWidth="imgWidth" 
                           :mode="extraChapterShowMode"
                           v-if="data.movieVersions" 
                           @click.stop>
@@ -37,12 +36,12 @@
 
 <script>
 import { ref, defineAsyncComponent } from 'vue'
+import { genExtraChapterShowMode, imgConfig } from '@/libs/data-processing'
 import DescLabel from './desc-label.vue'
 import MoreLabel from './more-label.vue'
 
 const descLabelMarginRight = 4
 const moreLabelWidth = 20
-const imgWidth = 109
 const labelStyle = {
     moreLabelWidth,
     descLabelMarginRight,
@@ -60,7 +59,6 @@ export default {
         return {
             descLabelMarginRight,
             labelStyle,
-            imgWidth,
             extraChapterList: [],
             extraChapterShowMode: '',
         }
@@ -71,7 +69,8 @@ export default {
         },
         imgStyle() {
             return {
-                width: `${this.imgWidth}px`,
+                width: `${imgConfig.width}px`,
+                height: `${imgConfig.height}px`,
             }
         },
     },
@@ -88,30 +87,17 @@ export default {
         },
         clickExtraChapter() { // 显示番外列表
             if (!this.extraChapterList.length) {
-                this.genExtraChapterPosition()
+                this.setExtraChapterShowMode()
                 this.extraChapterList = this.data.movieVersions
                 document.addEventListener('click', this.hideExtraChapter)
             }
         },
-        genExtraChapterPosition() {
-            const offsetLeft = this.$refs.animationItem.offsetLeft + this.imgWidth / 2
-            const offsetTop = this.$refs.animationItem.offsetTop + 165 / 2
-            const { 
-                clientWidth: homeContentWidth,
-                clientHeight: homeContentHeight, 
-            } = this.$refs.animationItem.parentNode
-
-            if (homeContentWidth <= 360 && offsetTop > homeContentHeight / 2 && offsetTop > 165) {
-                // 容器宽度小于360、图片中心处于下半区域、上方空间充足
-                this.extraChapterShowMode = 'top'
-            } else if (homeContentWidth <= 360 && (offsetTop <= homeContentHeight / 2 || offsetTop <= 165)) {
-                // 容器宽度小于360、（图片中心处于上半区域 或 上方空间不足）
-                this.extraChapterShowMode = 'bottom'
-            } else if (offsetLeft > homeContentWidth / 2) {
-                this.extraChapterShowMode = 'left'
-            } else {
-                this.extraChapterShowMode = 'right'
-            }
+        setExtraChapterShowMode() {
+            const showNum = this.data.movieVersions.length
+            const CardItemNode = this.$refs.animationItem
+            const homeNode = this.$refs.animationItem.parentNode
+            
+            this.extraChapterShowMode = genExtraChapterShowMode(homeNode, CardItemNode, showNum)
         },
         /**
          * @description 标题悬浮是否出现tooltip
@@ -200,7 +186,6 @@ export default {
     margin-bottom: 20px;
     box-sizing: border-box;
     float: left;
-    height: 140px;
 }
 .image-wrap {
     position: relative;
@@ -259,7 +244,6 @@ export default {
 }
 .image-wrap img {
     display: block;
-    height: 140px;
     overflow: hidden;
     text-decoration: none;
     border-radius: 4px;

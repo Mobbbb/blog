@@ -1,10 +1,10 @@
 <template>
     <div class="summary-wrap">
         <div class="summary-content" v-loading="isLoading">
-            <template v-if="articleList.length">
+            <template v-if="showArticleList.length">
                 <ArticleItem    :params="item" 
                                 :key="item._index"
-                                v-for="item in articleList">
+                                v-for="item in showArticleList">
                 </ArticleItem>
             </template>
             <el-empty :description="isLoading ? ' ' : '暂无数据'" v-else></el-empty>
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 import ArticleItem from './article-item.vue'
 
 export default {
@@ -29,7 +29,9 @@ export default {
     computed: {
         ...mapState('summary', [
             'isLoading',
-            'articleList',
+        ]),
+        ...mapGetters('summary', [
+            'showArticleList',
         ]),
     },
     mounted() {
