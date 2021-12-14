@@ -290,30 +290,35 @@ export const initSummaryListData = (data) => {
  * @returns 
  */
 export const formatSummaryContent = (content, splitLanguageList) => {
-    const formatDataList = []
+    let formatDataList = []
     if (content.type === summaryTypeMap.TEXT) { // 文本
         content.value.forEach(lineContent => { // 将单行文本处理为数组——以文字片段、代码片段、link片段分割
-            let lineList = []
+            let lineList = [{
+                value: lineContent,
+                type: summaryTypeMap.TEXT
+            }]
             splitLanguageList.forEach(splitLanguageItem => {
                 if (lineContent.indexOf(splitLanguageItem) > -1) {
-                    lineList = getSplitListByLanguage(lineContent, lineList, splitLanguageItem)
+                    const language = splitLanguageItem.slice(1, splitLanguageItem.length - 1)
+                    // /\{js}.+?\{\/js}/g
+                    const languageReg = new RegExp(eval('/{' + language + '}.+?{\\/' + language + '}/g'))
+                    lineList = getSplitListByRegExp(lineList, languageReg, summaryTypeMap.CODE, splitLanguageItem)
                 }
             })
 
             if (lineContent.indexOf('http') > -1) {
-                lineList = getSplitHttpLink(lineContent, lineList)
+                // const httpRegExp = new RegExp(/https?:\/\/.+.[\s|$]/g)
+                const httpRegExp = new RegExp(/https?:\/\/[\d\w\.\/\-\?\=]+/g)
+                lineList = getSplitListByRegExp(lineList, httpRegExp, summaryTypeMap.LINK, 'http')
             }
 
-            if (lineList.length) { // 存在代码片段、link片段
+            if (lineList.length > 1) { // lineContent被分割过，表明是混合片段
                 formatDataList.push({
                     value: lineList,
                     type: summaryTypeMap.MIXED,
                 })
             } else {
-                formatDataList.push({
-                    value: lineContent,
-                    type: summaryTypeMap.TEXT,
-                })
+                formatDataList = formatDataList.concat(lineList)
             }
         })
     } else {
@@ -324,39 +329,26 @@ export const formatSummaryContent = (content, splitLanguageList) => {
 }
 
 /**
- * @description 处理单行文字 或 二次处理单行文字中的片段
- * @param {*} str 处理单行文字时的对象
- * @param {*} list 二次处理单行文字中的片段的对象
- * @param {*} splitKey 
+ * @description 对列表字符串进行正则分割
+ * @param {Array.<Object>} list 
+ * @param {object} reg 正则表达式
+ * @param {String} type 切割的文本类型 | summaryTypeMap
+ * @param {String} splitKey 
  * @returns 
  */
-export const getSplitListByLanguage = (str, list = [], splitKey) => {
-    let lineList = [], mapList = []
-    
-    if (!list.length) { // 首次对字符串进行切割
-        mapList = [{
-            value: str,
-            type: summaryTypeMap.TEXT,
-        }]
-    } else {
-        mapList = list
-    }
-
-    mapList.forEach(item => {
+export const getSplitListByRegExp = (list = [], reg, type, splitKey) => {
+    let lineList = []
+    list.forEach(item => {
         if (item.value.indexOf(splitKey) > -1) {
-            const language = splitKey.slice(1, splitKey.length - 1)
-            let reg = new RegExp(eval('/{' + language + '}.+?{\\/' + language + '}/g')) // /\{js}.+?\{\/js}/g
-            let splitLineOfContent = item.value.split(reg)
-            let splitLineOfCode = item.value.match(reg)
+            const splitLineOfContent = item.value.split(reg)
+            const splitLineOfKey = item.value.match(reg)
+            console.log(splitLineOfContent, splitLineOfKey)
             
             splitLineOfContent.forEach((splitText, index) => {
                 if (index) { // 拼接代码段
-                    const splitCode = splitLineOfCode[index - 1]
-                    lineList.push({
-                        value: splitCode.slice(splitKey.length, splitCode.length - splitKey.length - 1),
-                        type: summaryTypeMap.CODE,
-                        language,
-                    })
+                    const splitLineOfKeyItem = splitLineOfKey[index - 1]
+                    const lineItem = getSplitItemByType(type, splitLineOfKeyItem, splitKey)
+                    lineList.push(lineItem)
                 }
                 lineList.push({ // 拼接文字段
                     value: splitText,
@@ -371,45 +363,23 @@ export const getSplitListByLanguage = (str, list = [], splitKey) => {
     return lineList
 }
 
-export const getSplitHttpLink = (str, list = []) => {
-    let lineList = [], mapList = []
-    
-    if (!list.length) { // 首次对字符串进行切割
-        mapList = [{
-            value: str,
-            type: summaryTypeMap.TEXT,
-        }]
-    } else {
-        mapList = list
+const getSplitItemByType = (type, splitLineOfKeyItem, splitKey) => {
+    switch (type) {
+        case summaryTypeMap.CODE:
+            const language = splitKey.slice(1, splitKey.length - 1)
+            return {
+                value: splitLineOfKeyItem.slice(splitKey.length, splitLineOfKeyItem.length - splitKey.length - 1),
+                type: summaryTypeMap.CODE,
+                language,
+            }
+        case summaryTypeMap.LINK:
+            return {
+                value: splitLineOfKeyItem.trim(),
+                type: summaryTypeMap.LINK,
+            }
+        default:
+            return {}
     }
-
-    mapList.forEach(item => {
-        if (item.value.indexOf('http') > -1) {
-            const httpRegExp = new RegExp(/https?:\/\/.+?(\s|$)/g)
-            const splitLineOfContent = item.value.split(httpRegExp)
-            const splitLineOfCode = item.value.match(httpRegExp)
-            
-            splitLineOfContent.forEach((splitText, index) => {
-                if (index) { // 拼接代码段
-                    const splitCode = splitLineOfCode[index - 1]
-                    if (splitCode) {
-                        lineList.push({
-                            value: splitCode.trim(),
-                            type: summaryTypeMap.LINK,
-                        })
-                    }
-                }
-                lineList.push({ // 拼接文字段
-                    value: splitText,
-                    type: summaryTypeMap.TEXT,
-                })
-            })
-        } else {
-            lineList.push(item)
-        }
-    })
-
-    return lineList
 }
 
 /**
