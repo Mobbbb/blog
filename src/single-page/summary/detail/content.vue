@@ -9,10 +9,16 @@
             <template v-for="(mixedItem, mixedIndex) in line.value">
                 <span v-if="mixedItem.type === 'text'" :key="`${index}-${mixedIndex}`">{{mixedItem.value}}</span>
                 <code v-if="mixedItem.type === 'code'" 
-                    :key="`${index}-${mixedIndex}`" 
-                    :class="`language-${mixedItem.language}`">
+                      :key="`${index}-${mixedIndex}`" 
+                      :class="`language-${mixedItem.language}`">
                     {{mixedItem.value}}
                 </code>
+                <span v-if="mixedItem.type === 'link'" 
+                      :key="`${index}-${mixedIndex}`" 
+                      class="link-href" 
+                      @click="linkJumpHandle(mixedItem.value)">
+                    {{mixedItem.value}}
+                </span>
             </template>
         </div>
         <pre v-if="line.type === 'code' && line.value" class="code-wrap"><code :class="`language-${line.language}`">{{line.value}}</code></pre>
@@ -23,6 +29,11 @@
 export default {
     name: 'summary-detail-content',
     props: ['params'],
+    methods: {
+        linkJumpHandle(href) {
+            window.open(href)
+        },
+    },
 }
 </script>
 
@@ -53,5 +64,13 @@ export default {
 }
 .code-wrap {
     margin: 0;
+}
+.link-href {
+    word-wrap: break-word;
+    color: #4ea1db;
+}
+.link-href:hover {
+    cursor: pointer;
+    color: #ca0c16;
 }
 </style>

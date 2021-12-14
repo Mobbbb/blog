@@ -104,6 +104,7 @@ export const summaryTypeMap = {
     CODE: 'code',
     MIXED: 'mixed',
     IMG: 'img',
+    LINK: 'link',
 }
 
 export const textTypeMap = [summaryTypeMap.TEXT, summaryTypeMap.CODE]

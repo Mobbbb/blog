@@ -292,7 +292,7 @@ export const initSummaryListData = (data) => {
 export const formatSummaryContent = (content, splitLanguageList) => {
     const formatDataList = []
     if (content.type === summaryTypeMap.TEXT) { // 文本
-        content.value.forEach(lineContent => { // 将单行文本处理为数组——以文字片段、代码片段分割
+        content.value.forEach(lineContent => { // 将单行文本处理为数组——以文字片段、代码片段、link片段分割
             let lineList = []
             splitLanguageList.forEach(splitLanguageItem => {
                 if (lineContent.indexOf(splitLanguageItem) > -1) {
@@ -300,7 +300,11 @@ export const formatSummaryContent = (content, splitLanguageList) => {
                 }
             })
 
-            if (lineList.length) { // 存在代码片段
+            if (lineContent.indexOf('http') > -1) {
+                lineList = getSplitHttpLink(lineContent, lineList)
+            }
+
+            if (lineList.length) { // 存在代码片段、link片段
                 formatDataList.push({
                     value: lineList,
                     type: summaryTypeMap.MIXED,
@@ -353,6 +357,47 @@ export const getSplitListByLanguage = (str, list = [], splitKey) => {
                         type: summaryTypeMap.CODE,
                         language,
                     })
+                }
+                lineList.push({ // 拼接文字段
+                    value: splitText,
+                    type: summaryTypeMap.TEXT,
+                })
+            })
+        } else {
+            lineList.push(item)
+        }
+    })
+
+    return lineList
+}
+
+export const getSplitHttpLink = (str, list = []) => {
+    let lineList = [], mapList = []
+    
+    if (!list.length) { // 首次对字符串进行切割
+        mapList = [{
+            value: str,
+            type: summaryTypeMap.TEXT,
+        }]
+    } else {
+        mapList = list
+    }
+
+    mapList.forEach(item => {
+        if (item.value.indexOf('http') > -1) {
+            const httpRegExp = new RegExp(/https?:\/\/.+?(\s|$)/g)
+            const splitLineOfContent = item.value.split(httpRegExp)
+            const splitLineOfCode = item.value.match(httpRegExp)
+            
+            splitLineOfContent.forEach((splitText, index) => {
+                if (index) { // 拼接代码段
+                    const splitCode = splitLineOfCode[index - 1]
+                    if (splitCode) {
+                        lineList.push({
+                            value: splitCode.trim(),
+                            type: summaryTypeMap.LINK,
+                        })
+                    }
                 }
                 lineList.push({ // 拼接文字段
                     value: splitText,

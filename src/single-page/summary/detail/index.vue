@@ -34,7 +34,7 @@ export default {
         formatData() {
             let formatDataList = []
             const { content = [] } = this.detailData
-            const splitLanguageList = ['{js}', '{css}', '{html}']
+            const splitLanguageList = ['{js}', '{css}', '{html}', '{shell}', '{nginx}']
 
             content.forEach(item => {
                 formatDataList = [...formatDataList, ...formatSummaryContent(item, splitLanguageList)]
