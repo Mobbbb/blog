@@ -307,8 +307,7 @@ export const formatSummaryContent = (content, splitLanguageList) => {
             })
 
             if (lineContent.indexOf('http') > -1) {
-                // const httpRegExp = new RegExp(/https?:\/\/.+.[\s|$]/g)
-                const httpRegExp = new RegExp(/https?:\/\/[\d\w\.\/\-\?\=]+/g)
+                const httpRegExp = new RegExp(/[a-zA-z]+:\/\/[^\s]*/)
                 lineList = getSplitListByRegExp(lineList, httpRegExp, summaryTypeMap.LINK, 'http')
             }
 
@@ -342,7 +341,6 @@ export const getSplitListByRegExp = (list = [], reg, type, splitKey) => {
         if (item.value.indexOf(splitKey) > -1) {
             const splitLineOfContent = item.value.split(reg)
             const splitLineOfKey = item.value.match(reg)
-            console.log(splitLineOfContent, splitLineOfKey)
             
             splitLineOfContent.forEach((splitText, index) => {
                 if (index) { // 拼接代码段
