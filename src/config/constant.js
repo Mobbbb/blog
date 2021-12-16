@@ -107,4 +107,10 @@ export const summaryTypeMap = {
     LINK: 'link',
 }
 
+export const prismMap = {
+    javascript: ['{javascript}', '{js}'],
+    markup: ['{html}'],
+    bash: ['{shell}'],
+}
+
 export const textTypeMap = [summaryTypeMap.TEXT, summaryTypeMap.CODE]

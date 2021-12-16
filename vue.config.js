@@ -106,6 +106,7 @@ module.exports = {
             resolve: {
                 alias: {
                     '@': resolve('src'),
+                    'babel': resolve('babel.config.js'),
                 }
             },
         }

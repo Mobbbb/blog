@@ -9,9 +9,11 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { formatSummaryContent } from '@/libs/data-processing'
+import { prismMap } from '@/config/constant.js'
 import BannerTag from './banner-tag.vue'
 import Content from './content.vue'
 import Prism from 'prismjs'
+import BabelConfig from 'babel'
 
 export default {
     name: 'summary-detail',
@@ -31,13 +33,28 @@ export default {
             }
             return {}
         },
+        splitLanguageList() {
+            let languages = [], languageTypes = []
+            BabelConfig.plugins.forEach(item => {
+                if (Array.isArray(item) && item[0] === 'prismjs') {
+                    languageTypes = item[1].languages
+                }
+            })
+            languageTypes.forEach(item => {
+                if (prismMap[item]) {
+                    languages = [...languages, ...prismMap[item]]
+                } else {
+                    languages.push(`{${item}}`)
+                }
+            })
+            return languages
+        },
         formatData() {
             let formatDataList = []
             const { content = [] } = this.detailData
-            const splitLanguageList = ['{js}', '{css}', '{html}', '{shell}', '{nginx}']
 
             content.forEach(item => {
-                formatDataList = [...formatDataList, ...formatSummaryContent(item, splitLanguageList)]
+                formatDataList = [...formatDataList, ...formatSummaryContent(item, this.splitLanguageList)]
             })
             return formatDataList
         },
