@@ -101,6 +101,7 @@ export const defaultHiddenType = [tvPlayConfig.value]
 
 export const summaryTypeMap = {
     TEXT: 'text',
+    TITLE: 'title',
     CODE: 'code',
     MIXED: 'mixed',
     IMG: 'img',

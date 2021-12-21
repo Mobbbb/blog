@@ -338,7 +338,7 @@ export const formatSummaryContent = (content, splitLanguageList) => {
 export const getSplitListByRegExp = (list = [], reg, type, splitKey) => {
     let lineList = []
     list.forEach(item => {
-        if (item.value.indexOf(splitKey) > -1) {
+        if (item.value.indexOf(splitKey) > -1 && item.type === summaryTypeMap.TEXT) {
             const splitLineOfContent = item.value.split(reg)
             const splitLineOfKey = item.value.match(reg)
             

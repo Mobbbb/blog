@@ -1,9 +1,9 @@
 importScripts('https://mobbbb.top/resource/workbox-v4.3.1/workbox-sw.js')
 workbox.setConfig({
     debug: false,
-    modulePathPrefix: "https://mobbbb.top/resource/workbox-v4.3.1"
+    modulePathPrefix: 'https://mobbbb.top/resource/workbox-v4.3.1'
 })
-// workbox.core.skipWaiting() <- This method is deprecated, and will be removed in Workbox v7.
+// workbox.core.skipWaiting() <- This method is deprecated, and will be removed in Workbox v7. 
 // Calling self.skipWaiting() instead.
 self.skipWaiting()
 // Claim any currently available clients once the service worker becomes active
@@ -57,7 +57,7 @@ var cacheFirstOptions = {
         return request
     },
     cachedResponseWillBeUsed: function(e) {
-        if (e.cachedResponse && e.cachedResponse.type === "opaque") {
+        if (e.cachedResponse && e.cachedResponse.type === 'opaque') {
             caches.delete(e.cacheName)
             return null
         }
@@ -68,12 +68,12 @@ var cacheFirstOptions = {
 var chunksCacheName = 'chunks'
 function urlHashFilter(url) {
     var requestUrl = new URL(url);
-    var name = requestUrl.pathname.split(".");
+    var name = requestUrl.pathname.split('.');
     if (name.length > 2) {
         var hash = name.splice(-2, 1)[0];
-        return [requestUrl.origin + name.join("."), hash]
+        return [requestUrl.origin + name.join('.'), hash]
     }
-    return [requestUrl.origin + name.join("."), ""]
+    return [requestUrl.origin + name.join('.'), '']
 }
 function traverseCaches(callbackfunc) {
     caches.keys().then(function(cacheNames) {
@@ -121,9 +121,9 @@ function handlerUpdateChunks(_ref) {
 
 function handlerUpdateAPI(_ref3) {
     var event = _ref3.event
-    if (event.request.headers.get("accept").indexOf("application/json") > -1) {
+    if (event.request.headers.get('accept').indexOf('application/json') > -1) {
         return workbox.strategies.networkFirst({
-            cacheName: "api",
+            cacheName: 'api',
             plugins: [
                 new workbox.expiration.Plugin({
                     maxEntries: 20,
@@ -135,9 +135,9 @@ function handlerUpdateAPI(_ref3) {
         }).catch(function(e) {
             console.error(e)
         })
-    } else if (event.request.headers.get("accept").indexOf("text/html") > -1) {
+    } else if (event.request.headers.get('accept').indexOf('text/html') > -1) {
         return workbox.strategies.staleWhileRevalidate({ // 先缓存后网络
-            cacheName: "page",
+            cacheName: 'page',
             plugins: [
                 new workbox.expiration.Plugin({
                     maxEntries: 20,
@@ -155,7 +155,7 @@ function handlerUpdateAPI(_ref3) {
             requestWillFetch: function(_ref4) {
                 var request = _ref4.request
                 request = new Request(request, {
-                    mode: "same-origin"
+                    mode: 'same-origin'
                 })
                 return request
             }
@@ -177,7 +177,7 @@ workbox.routing.registerRoute(
 workbox.routing.registerRoute(
     new RegExp(eval('/^https?:\\/\\/' + location.host + '(.*).(png|gif|jpg|webp)$/')), 
     workbox.strategies.cacheFirst({
-        cacheName: "images",
+        cacheName: 'images',
         plugins: [
             new workbox.expiration.Plugin({
                 maxAgeSeconds: 365 * 24 * 60 * 60,
@@ -195,7 +195,7 @@ workbox.routing.registerRoute(
 workbox.routing.registerRoute(
     new RegExp(/^https?:\/\/unpkg\.com\/(.*)\.(js|css|woff)$/),
     workbox.strategies.cacheFirst({
-        cacheName: "statics",
+        cacheName: 'statics',
         plugins: [
             new workbox.expiration.Plugin({
                 maxAgeSeconds: 365 * 24 * 60 * 60
@@ -217,11 +217,11 @@ workbox.routing.registerRoute(
     handlerUpdateAPI
 )
 
-self.addEventListener("error", function(event) {
-    console.error("出错")
+self.addEventListener('error', function(event) {
+    console.error('error')
     console.dir(event)
 })
-self.addEventListener("message", function(event) {
+self.addEventListener('message', function(event) {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting()
     }
