@@ -1,9 +1,15 @@
 <template>
     <div class="article-item-wrap mobile-wrap" @click="jumpToDetail">
-        <div class="article-title">
-            <span>{{params.title}}</span>
+        <div class="article-title" ref="titleWrap">
+            <span :style="titleStyle" ref="titleText">{{params.title}}</span>
             <div class="article-type-wrap">
-                <span class="article-type-label" v-for="item in params.label" :key="item">{{item}}</span>
+                <span class="article-type-label" 
+                      :ref="setItemRef" 
+                      :style="showLabelItems.length !== index + 1 ? labelStyle : {}"
+                      v-for="(item, index) in showLabelItems"
+                      :key="item">
+                    {{item}}
+                </span>
             </div>
         </div>
         <p class="ellipsis-content">{{params.ellipsisContent}}</p>
@@ -14,15 +20,81 @@
 <script>
 import { summaryDetailRoute } from '@/router'
 
+const titleStyleConfig = {
+    minWidth: 0.4,
+    marginRight: 8,
+}
+const labelMarginRight = 4
+
 export default {
     name: 'article-item',
     props: ['params'],
     data() {
         return {
-            
+            labelItems: [],
+            labelShowNum: 0,
+            titleWrapWidth: 0,
+            titleTextWidth: 0,
+            titleStyle: {},
         }
     },
+    computed: {
+        showLabelItems() {
+            if (this.labelShowNum) {
+                return this.params.label.slice(0, this.labelShowNum)
+            }
+            return this.params.label
+        },
+        labelStyle() {
+            return {
+                marginRight: `${labelMarginRight}px`,
+            }
+        },
+    },
+    mounted() {
+        this.titleWrapWidth = this.$refs.titleWrap.clientWidth
+        this.titleTextWidth = this.$refs.titleText.clientWidth
+        this.genTitleTextStyle()
+        this.genLabelShowNum()
+    },
     methods: {
+        setItemRef(el) {
+            if (el) {
+                this.labelItems.push(el)
+            }
+        },
+        genTitleTextStyle() {
+            if (this.titleTextWidth < this.titleWrapWidth * 0.4) {
+                this.titleStyle = {
+                    marginRight: `${titleStyleConfig.marginRight}px`,
+                }
+            } else {
+                this.titleStyle = {
+                    flexShrink: 1,
+                    minWidth: `${titleStyleConfig.minWidth * 100}%`,
+                    marginRight: `${titleStyleConfig.marginRight}px`,
+                }
+            }
+        },
+        genLabelShowNum() {
+            let restWidth = 0
+            if (this.titleStyle.minWidth) {
+                restWidth = this.titleWrapWidth * (1 - titleStyleConfig.minWidth) - titleStyleConfig.marginRight
+            } else {
+                restWidth = this.titleWrapWidth - this.titleTextWidth - titleStyleConfig.marginRight
+            }
+
+            for (let index = 0; index < this.labelItems.length; index++) {
+                restWidth -= this.labelItems[index].clientWidth
+                if (restWidth < 0 && index !== 0) {
+                    this.labelShowNum = index
+                    break
+                } else {
+                    this.labelShowNum = index + 1
+                }
+                restWidth -= labelMarginRight
+            }
+        },
         jumpToDetail() {
             this.$router.push({
                 name: summaryDetailRoute.name,
@@ -31,6 +103,9 @@ export default {
                 }
             })
         },
+    },
+    beforeUpdate() {
+        this.labelItems = []
     },
 }
 </script>
@@ -58,10 +133,10 @@ export default {
     transition: all .15s linear;
 }
 .article-title > span {
-    margin-right: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex-shrink: 0;
 }
 .article-type-wrap {
     display: flex;
@@ -74,7 +149,6 @@ export default {
     font-size: 12px;
     border-radius: 2px;
     display: inline-block;
-    margin-right: 4px;
     white-space: nowrap;
 }
 .ellipsis-content {
