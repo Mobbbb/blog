@@ -89,7 +89,7 @@ export default {
         ]),
         ...mapActions('app', [
             'searchHandle',
-            'resetFilterHandle',
+            'dispatchCommit',
         ]),
         onEnter() {
             this.inputEl.blur()
@@ -113,7 +113,7 @@ export default {
         },
         clickResetBtn() {
             this.updateInputValue('')
-            this.resetFilterHandle()
+            this.dispatchCommit({ commitName: 'resetSelectedFilter' })
             this.searchHandle()
             this.hidePopoverAction()
         },

@@ -1,23 +1,22 @@
 <template>
     <div class="footer-tools-wrap">
         <el-popover trigger="click" placement="left-end" :width="110" popper-class="footer-filter-popover-wrap">
-            <el-checkbox-group v-model="selectedCurrentMonthFilter">
-                <div v-for="item in filterConfig" :key="item" class="filter-item">
+            <el-checkbox-group v-model="selectedFilter">
+                <div v-for="item in innerPageFilterConfig" :key="item" class="filter-item">
                     <el-checkbox :label="item.value">
                         <span class="filter-item-label">{{item.label}}</span>
                     </el-checkbox>
                 </div>
             </el-checkbox-group>
             <template #reference>
-                <Triangle :active="selectedCurrentMonthFilter.length"></Triangle>
+                <Triangle :active="selectedFilter.length"></Triangle>
             </template>
         </el-popover>
     </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
-import { terminationConfig, unratedConfig } from '@/config/constant.js'
+import { mapActions, mapGetters } from 'vuex'
 import Triangle from '@/components/triangle.vue'
 
 export default {
@@ -25,24 +24,26 @@ export default {
     components: {
         Triangle,
     },
-    data() {
-        return {
-            filterConfig: [terminationConfig, unratedConfig],
-        }
-    },
     computed: {
-        selectedCurrentMonthFilter: {
+        selectedFilter: {
             get() {
-                return this.$store.state.home.selectedCurrentMonthFilter
+                return this.innerPageSelectedFilter
             },
             set(value) {
-                this.setCurrentMonthFilter(value)
+                this.dispatchCommit({
+                    commitName: 'setInnerPageSelectedFilter',
+                    data: value,
+                })
             },
         },
+        ...mapGetters('app', [
+            'innerPageFilterConfig',
+            'innerPageSelectedFilter',
+        ]),
     },
     methods: {
-        ...mapMutations('home', [
-            'setCurrentMonthFilter',
+        ...mapActions('app', [
+            'dispatchCommit',
         ]),
     },
 }

@@ -1,6 +1,11 @@
 import { filterDataByRateScore, filterDataByText, movieTotalScore } from '@/libs/data-processing'
 import { movieRateScoreConfig } from '@/config/constant.js'
 import { fetchMovieListData } from '@/api/movie.js'
+import { deepClone } from '@/libs/util'
+
+const initSelectedFilter = {
+    rateScore: [0, movieTotalScore],
+}
 
 const movie = {
     namespaced: true,
@@ -12,9 +17,7 @@ const movie = {
             filterConfig: {
                 rateScore: movieRateScoreConfig,
             },
-            selectedFilter: {
-                rateScore: [0, movieTotalScore],
-            },
+            selectedFilter: deepClone(initSelectedFilter),
         }
     },
     getters: {
@@ -22,10 +25,13 @@ const movie = {
             if (rootState.app.searchFlag) {
                 return state.filterSearchTextData
             } else {
-                return state.movieList
+                return state.innerPageFilterData
             }
         },
-        filterSelectedStatusConfig(state) {
+        innerPageFilterData(state) {
+            return state.movieList
+        },
+        filterSelectedStatusConfig(state) { // nav筛选面板选中情况
             const hasSelectedRateScore = state.selectedFilter.rateScore[0] !== 0 
             || state.selectedFilter.rateScore[1] !== movieTotalScore
 
@@ -33,7 +39,7 @@ const movie = {
                 hasSelectedRateScore,
             }
         },
-        hasSelectedFilter(state, getters) {
+        hasSelectedFilter(state, getters) { // nav筛选面板是否存在选中项
             return Object.keys(getters.filterSelectedStatusConfig)
                     .filter(key => getters.filterSelectedStatusConfig[key])
                     .length
@@ -46,26 +52,18 @@ const movie = {
         setMovieList(state, value) {
             state.movieList = value
         },
+        setLoadingStatus(state, status) {
+            state.isLoading = status
+        },
         resetSelectedFilter(state) {
-            state.selectedFilter = {
-                rateScore: [0, movieTotalScore],
-            }
+            state.selectedFilter = deepClone(initSelectedFilter)
         },
         setSelectedRateScore(state, data) {
             state.selectedFilter.rateScore = data
         },
-        setSelectedLabel(state, data) {
-            
-        },
-        setSelectedHideScore(state, data) {
-            
-        },
-        setLoadingStatus(state, status) {
-            state.isLoading = status
-        },
     },
     actions: {
-        async getMovieListHandle({ state, commit }) {
+        async getMovieListHandle({ state, commit }) { // 数据获取
             if (state.movieList.length) return 
 
             commit('setLoadingStatus', true)
@@ -74,6 +72,11 @@ const movie = {
 
             commit('setMovieList', listData)
         },
+        /**
+         * @description 按筛选条件过滤数据
+         * @param {*} store 
+         * @param {*} text 输入框内容
+         */
         filterDataByConfig({ state, getters, commit }, text) {
             let filterData = []
 

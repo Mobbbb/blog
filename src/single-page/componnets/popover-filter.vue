@@ -75,7 +75,7 @@ export default {
                 return this.popoverSelectedFilter.rateScore
             },
             set(value) {
-                this.setFilterHandle({
+                this.dispatchCommit({
                     commitName: 'setSelectedRateScore',
                     data: value,
                 })
@@ -86,7 +86,7 @@ export default {
                 return this.popoverSelectedFilter.hideScore
             },
             set(value) {
-                this.setFilterHandle({
+                this.dispatchCommit({
                     commitName: 'setSelectedHideScore',
                     data: value,
                 })
@@ -97,7 +97,7 @@ export default {
                 return this.popoverSelectedFilter.others
             },
             set(value) {
-                this.setFilterHandle({
+                this.dispatchCommit({
                     commitName: 'setSelectedOthers',
                     data: value,
                 })
@@ -106,7 +106,7 @@ export default {
     },
 	methods: {
         ...mapActions('app', [
-            'setFilterHandle',
+            'dispatchCommit',
         ]),
         clickResetBtn() {
             this.$emit('on-reset')
@@ -115,7 +115,7 @@ export default {
             this.$emit('on-search')
         },
         clickLabel(name) {
-            this.setFilterHandle({
+            this.dispatchCommit({
                 commitName: 'setSelectedLabel',
                 data: name,
             })

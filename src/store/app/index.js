@@ -1,4 +1,4 @@
-import router, { homeRoute, movieRoute, summaryRoute } from '@/router'
+import router, { homeRoute, movieRoute, summaryRoute, routes } from '@/router'
 
 const app = {
     namespaced: true,
@@ -33,6 +33,16 @@ const app = {
                 height: `calc(100% - ${state.mainGap[0] + state.mainGap[2]}px)`,
             }
         },
+        showFooterTools(state) {
+            const { meta } = router.currentRoute.value
+            const { navSearchMutualExclusion } = meta
+            let flag = navSearchMutualExclusion === false
+
+            if (navSearchMutualExclusion) {
+                flag = !state.searchFlag
+            }
+            return flag
+        },
         popoverFilterConfig(state, getters, rootState) { // 高级筛选面板的选项配置
             const { name } = router.currentRoute.value
             return rootState[name] && rootState[name].filterConfig || {}
@@ -40,6 +50,14 @@ const app = {
         popoverSelectedFilter(state, getters, rootState) { // 选中的高级筛选集合
             const { name } = router.currentRoute.value
             return rootState[name] && rootState[name].selectedFilter || {}
+        },
+        innerPageFilterConfig(state, getters, rootState) { // 页脚筛选面板的选项配置
+            const { name } = router.currentRoute.value
+            return rootState[name] && rootState[name].innerPageFilterConfig || {}
+        },
+        innerPageSelectedFilter(state, getters, rootState) { // 选中的页脚筛选集合
+            const { name } = router.currentRoute.value
+            return rootState[name] && rootState[name].innerPageSelectedFilter || []
         },
     },
     mutations: {
@@ -68,7 +86,7 @@ const app = {
     actions: {
         searchHandle({ state, rootGetters, commit, dispatch }) {
             const { name } = router.currentRoute.value
-            const searchRouteList = [homeRoute.name, movieRoute.name]
+            const searchRouteList = [homeRoute.name, movieRoute.name, summaryRoute.name]
 
             if (!searchRouteList.includes(name)) return
 
@@ -81,13 +99,9 @@ const app = {
                 dispatch(`${name}/filterDataByConfig`, state.searchText, { root: true })
             }
         },
-        setFilterHandle({ commit }, { commitName, data }) {
+        dispatchCommit({ commit }, { commitName, data = {} }) {
             const { name } = router.currentRoute.value
             commit(`${name}/${commitName}`, data, { root: true })
-        },
-        resetFilterHandle({ commit }) {
-            const { name } = router.currentRoute.value
-            commit(`${name}/resetSelectedFilter`, {}, { root: true })
         },
         registerServiceWorker({ commit }) {
             window.addEventListener('load', function() {

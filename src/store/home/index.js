@@ -7,6 +7,8 @@ import {
     dateType, 
     scoreType,
     defaultHiddenType,
+    terminationConfig,
+    unratedConfig,
 } from '@/config/constant.js'
 import { 
     initHomeListData,
@@ -54,28 +56,19 @@ const home = {
                 others: othersCheckConfig,
             },
             selectedFilter: deepClone(initSelectedFilter), // 首页高级筛选的选中项
-            selectedCurrentMonthFilter: [], // 页内筛选的勾选项
+            innerPageFilterConfig: [terminationConfig, unratedConfig], // 首页页脚筛选的配置
+            innerPageSelectedFilter: [], // 页内筛选的选中项
         }
     },
     getters: {
-        availableYears(state) {
-            const availableYears = []
-            state.animationList.forEach(item => {
-                if (!availableYears.includes(item.years)) {
-                    availableYears.push(item.years)
-                }
-            })
-            availableYears.sort(ascendingOrder())
-            return availableYears
-        },
         showAnimationList(state, getters, rootState) {
             if (rootState.app.searchFlag) {
                 return state.filterSearchTextData
             } else {
-                return getters.currentBlockData
+                return getters.innerPageFilterData
             }
         },
-        currentBlockData(state) { // 常规展示的年-月数据项
+        innerPageFilterData(state) { // 常规展示的年-月数据项
             const currentTimeData = state.animationList.filter((item) => {
                 return item.years === state.selectedYears 
                     && item.month === state.activeMonth 
@@ -83,9 +76,9 @@ const home = {
             })
 
             // 过滤页脚的筛选项
-            return filterDataByOthersCheck(state.selectedCurrentMonthFilter, currentTimeData)
+            return filterDataByOthersCheck(state.innerPageSelectedFilter, currentTimeData)
         },
-        filterSelectedStatusConfig(state) {
+        filterSelectedStatusConfig(state) { // nav筛选面板选中情况
             const hasSelectedRateScore = state.selectedFilter.rateScore[0] !== 0 
             || state.selectedFilter.rateScore[1] !== homeTotalScore
 
@@ -96,13 +89,38 @@ const home = {
                 hasSelectedOthers: state.selectedFilter.others.length,
             }
         },
-        hasSelectedFilter(state, getters) {
+        hasSelectedFilter(state, getters) { // nav筛选面板是否存在选中项
             return Object.keys(getters.filterSelectedStatusConfig)
                     .filter(key => getters.filterSelectedStatusConfig[key])
                     .length
         },
+        availableYears(state) {
+            const availableYears = []
+            state.animationList.forEach(item => {
+                if (!availableYears.includes(item.years)) {
+                    availableYears.push(item.years)
+                }
+            })
+            availableYears.sort(ascendingOrder())
+            return availableYears
+        },
     },
     mutations: {
+        setFilterSearchTextData(state, list) {
+            state.filterSearchTextData = list
+        },
+        setAnimationList(state, list) {
+            state.animationList = list
+        },
+        setLoadingStatus(state, status) {
+            state.isLoading = status
+        },
+        setInnerPageSelectedFilter(state, data) {
+            state.innerPageSelectedFilter = data
+        },
+        resetSelectedFilter(state) {
+            state.selectedFilter = deepClone(initSelectedFilter)
+        },
         updateSelectedSortType(state, value) {
             state.selectedSortType = value
         },
@@ -113,12 +131,6 @@ const home = {
         updateActiveMonth(state, value) {
             state.activeMonth = value
             localStorage.setItem('pick-month', value)
-        },
-        setAnimationList(state, list) {
-            state.animationList = list
-        },
-        setFilterSearchTextData(state, list) {
-            state.filterSearchTextData = list
         },
         sortFilterDataByScore(state, data = []) {
             if (data.length) {
@@ -133,9 +145,6 @@ const home = {
         },
         setAllLabelArr(state, data) {
             state.filterConfig.allLabelArr = data
-        },
-        resetSelectedFilter(state) {
-            state.selectedFilter = deepClone(initSelectedFilter)
         },
         setSelectedLabel(state, data) {
             if (!state.selectedFilter.label.includes(data)) {
@@ -152,12 +161,6 @@ const home = {
         },
         setSelectedOthers(state, data) {
             state.selectedFilter.others = data
-        },
-        setLoadingStatus(state, status) {
-            state.isLoading = status
-        },
-        setCurrentMonthFilter(state, data) {
-            state.selectedCurrentMonthFilter = data
         },
     },
     actions: {
@@ -176,7 +179,7 @@ const home = {
             })
             commit('updateYears', years)
         },
-        async getAnimationHandle({ state, commit }) {
+        async getAnimationHandle({ state, commit }) { // 数据获取
             if (state.animationList.length) return
 
             commit('setLoadingStatus', true)
@@ -194,16 +197,23 @@ const home = {
         /**
          * @description 按筛选条件过滤数据
          * @param {*} store 
-         * @param {*} text 标题内容
+         * @param {*} text 输入框内容
          */
         filterDataByConfig({ state, getters, commit, dispatch }, text) {
-            let filterData = []
+            let filterData = [], rawMaterial = []
+            const { meta } = router.currentRoute.value
+            const { navSearchMutualExclusion } = meta
+            if (navSearchMutualExclusion) {
+                rawMaterial = state.animationList
+            } else {
+                rawMaterial = getters.innerPageFilterData
+            }
 
             // 按输入框内容进行数据筛选
             if (text !== '') {
-                filterData = filterDataByText(text, state.animationList)
+                filterData = filterDataByText(text, rawMaterial)
             } else {
-                filterData = state.animationList
+                filterData = rawMaterial
             }
 
             // 过滤勾选的label

@@ -8,6 +8,7 @@ import {
     unratedConfig, 
     textTypeMap, 
     summaryTypeMap,
+    defaultHideConfig,
 } from '@/config/constant'
 
 export const homeTotalScore = 5
@@ -117,12 +118,12 @@ export const sortDataByScoreHandle = (data) => {
     return data
 }
 
-export const filterDataByText = (text, data) => {
+export const filterDataByText = (text, data, key = 'name') => {
     let regStr = ['', ...text.trim().toLowerCase(), ''].join('.*')
     let reg = new RegExp(regStr)
     let filterData = data.filter(item => {
-        let nameTestStatus = reg.test(item.name.toLowerCase()) // 输入abc，匹配abc、abcdefg...
-        || text.trim().toLowerCase().indexOf(item.name.toLowerCase()) > -1 // 输入框abc，匹配abc、ab、bc、a、b、c
+        let nameTestStatus = reg.test(item[key].toLowerCase()) // 输入abc，匹配abc、abcdefg...
+        || text.trim().toLowerCase().indexOf(item[key].toLowerCase()) > -1 // 输入框abc，匹配abc、ab、bc、a、b、c
         
         if (item.alias) {
             for (let i = 0; i < item.alias.length; i++) {
@@ -212,8 +213,18 @@ export const filterDataByOthersCheck = (checkArr, data) => {
     if (checkArr.includes(extraChapterConfig.value)) {
         filterData = includeExtraChapterItem(filterData)
     }
+    // 筛选次要项
+    if (checkArr.includes(defaultHideConfig.value)) {
+        filterData = excludeDefaultHideItem(filterData)
+    }
 
     return filterData
+}
+
+export const excludeDefaultHideItem = (data) => {
+    return data.filter((item) => {
+        return item.showDefault !== false
+    })
 }
 
 /**

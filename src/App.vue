@@ -17,7 +17,6 @@ import FooterTools from '@/single-page/componnets/footer-tools.vue'
 import { computed, defineAsyncComponent, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import { homeRoute } from '@/router'
 
 export default {
   	name: 'App',
@@ -37,12 +36,10 @@ export default {
 		})
 		
 		return {
-			showFooterTools: computed(() => {
-				return !store.state.app.searchFlag && route.name === homeRoute.name
-			}),
+			showFooterTools: computed(() => store.getters['app/showFooterTools']),
 			showInstall: computed(() => store.state.app.installConfig.showBtn),
 			showDebugger: computed(() => store.state.app.showDebugger),
-			mainWrapStyle: computed(() => store.getters['app/mainStyle'] ),
+			mainWrapStyle: computed(() => store.getters['app/mainStyle']),
 			appMainStyle: computed(() => {
 				return { 
 					paddingTop: `${store.state.app.navHeight}px`,

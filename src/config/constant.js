@@ -75,6 +75,7 @@ export const minusScore = {
 
 export const hideScoreConfig = [burstScore, minusScore]
 
+// 其他筛选项
 export const terminationConfig = {
     label: '排除观看终止项',
     value: '0',
@@ -93,6 +94,11 @@ export const tvPlayConfig = {
 export const extraChapterConfig = {
     label: '番外',
     value: '3',
+}
+
+export const defaultHideConfig = {
+    label: '隐藏次要项',
+    value: '4',
 }
 
 export const othersCheckConfig = [terminationConfig, tvPlayConfig, extraChapterConfig]
