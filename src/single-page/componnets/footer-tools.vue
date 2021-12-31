@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import Triangle from '@/components/triangle.vue'
 
 export default {
@@ -34,16 +34,23 @@ export default {
                     commitName: 'setInnerPageSelectedFilter',
                     data: value,
                 })
+                if (this.searchFlag) { // 处于搜索状态时，需要主动调用
+                    this.searchHandle()
+                }
             },
         },
         ...mapGetters('app', [
             'innerPageFilterConfig',
             'innerPageSelectedFilter',
         ]),
+        ...mapState('app', [
+            'searchFlag',
+        ])
     },
     methods: {
         ...mapActions('app', [
             'dispatchCommit',
+            'searchHandle',
         ]),
     },
 }
