@@ -1,6 +1,7 @@
 import { fetchSummaryListData } from '@/api/summary.js'
 import { initSummaryListData, filterDataByText, filterDataByOthersCheck } from '@/libs/data-processing'
 import { defaultHideConfig } from '@/config/constant'
+import router from '@/router'
 
 const summary = {
     namespaced: true,

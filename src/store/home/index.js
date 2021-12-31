@@ -23,6 +23,7 @@ import {
 } from '@/libs/data-processing'
 import { deepClone, ascendingOrder } from '@/libs/util'
 import { fetchHomeListData, fetchScoreMap } from '@/api/home.js'
+import router from '@/router'
 
 /**
  * @description 新增筛选项步骤
