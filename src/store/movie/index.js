@@ -25,7 +25,7 @@ const movie = {
             if (rootState.app.searchFlag) {
                 return state.filterSearchTextData
             } else {
-                return state.innerPageFilterData
+                return getters.innerPageFilterData
             }
         },
         innerPageFilterData(state) {
