@@ -1,4 +1,4 @@
-import { filterDataByRateScore, filterDataByText, movieTotalScore } from '@/libs/data-processing'
+import { filterDataByRateScore, filterDataByText, movieTotalScore, initMovieListData } from '@/libs/data-processing'
 import { movieRateScoreConfig } from '@/config/constant.js'
 import { fetchMovieListData } from '@/api/movie.js'
 import { deepClone } from '@/libs/util'
@@ -70,7 +70,7 @@ const movie = {
             const { data: listData = [] } = await fetchMovieListData() || {}
             commit('setLoadingStatus', false)
 
-            commit('setMovieList', listData)
+            commit('setMovieList', initMovieListData(listData))
         },
         /**
          * @description 按筛选条件过滤数据

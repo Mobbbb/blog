@@ -18,7 +18,7 @@ export const movieRoute = {
         level: 0,
         name: '电影',
     },
-    component: () => import('@/single-page/movie/movie-page.jsx')
+    component: () => import('@/single-page/movie/index.vue')
 }
 export const summaryRoute = {
     path: "/summary/",

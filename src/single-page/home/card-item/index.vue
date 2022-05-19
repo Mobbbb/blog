@@ -3,8 +3,14 @@
         <div class="image-wrap">
             <img :src="data.cover" :style="imgStyle" :alt="data.showName">
             <div class="movie-versions-icon" @click.stop="clickExtraChapter" v-if="data.movieVersions">番外</div>
-            <div class="image-label image-right-label" v-if="searchFlag">{{data.years}}</div>
-            <div class="image-label image-bottom-label" v-if="searchFlag">{{data.month}}月</div>
+            <template v-if="type === 'movie'">
+                <div class="image-label image-right-label">{{data.years}}</div>
+                <div class="image-label image-bottom-label">{{data.country}}</div>
+            </template>
+            <template v-else>
+                <div class="image-label image-right-label" v-if="searchFlag">{{data.years}}</div>
+                <div class="image-label image-bottom-label" v-if="searchFlag">{{data.month}}月</div>
+            </template>
             <ExtraChapter :list="extraChapterList" 
                           :mode="extraChapterShowMode"
                           v-if="data.movieVersions" 
@@ -21,7 +27,12 @@
                     <DescLabel v-else :marginRight="descLabelMarginRight" :name="cell.name"></DescLabel>
                 </template>
             </div>
-            <div class="animation-item-state paddingLeft4">
+            <div class="animation-item-state paddingLeft4 line1-limit" v-if="type === 'movie'">
+                <span>主演</span>
+                <i></i>
+                <span>{{data.actors.join(' / ')}}</span>
+            </div>
+            <div class="animation-item-state paddingLeft4" v-else>
                 <span v-if="data.endProgress === data.episodes">已看完</span>
                 <span v-else-if="data.waitToScore || data.watching">观看至{{data.endProgress}}话</span>
                 <span v-else>终止于{{data.endProgress}}话</span>
@@ -49,7 +60,7 @@ const labelStyle = {
 
 export default {
     name: 'animation-item',
-    props: ['data', 'searchFlag', 'listData'],
+    props: ['data', 'searchFlag', 'listData', 'type'],
     components: {
         DescLabel,
         MoreLabel,
@@ -311,5 +322,13 @@ export default {
 }
 .paddingLeft4 {
     padding-left: 4px;
+}
+.line1-limit {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
 }
 </style>

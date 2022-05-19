@@ -52,6 +52,23 @@ export const initHomeListData = (scoreMap, data) => {
     }
 }
 
+export const initMovieListData = (data) => {
+    data.forEach((item, index) => {
+        let labelArr = [], hoverShowLabel = []
+
+        item.label.forEach(name => {
+            labelArr.push({ name })
+            hoverShowLabel.push(name)
+        })
+
+        item.showName = item.name
+        item.label = labelArr
+        item.score = item.score / 2
+        item._index = index
+    })
+    return data
+}
+
 /**
  * @description 最终分数计算
  */
@@ -245,7 +262,7 @@ export const includeExtraChapterItem = (data) => {
  */
 export const includeTvPlayItem = (data) => {
     return data.filter(item => {
-        return item.type === 'tv'
+        return item.type === tvPlayConfig.value
     })
 }
 
