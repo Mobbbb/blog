@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import NavMenu from '@/single-page/componnets/nav-menu.vue'
-import FooterTools from '@/single-page/componnets/footer-tools.vue'
+import NavMenu from '@/single-page/components/nav-menu.vue'
+import FooterTools from '@/single-page/components/footer-tools.vue'
 import { computed, defineAsyncComponent, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'

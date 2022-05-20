@@ -121,6 +121,9 @@ export default {
     background-color: #ecf5ff;
     color: #66b1ff;
 }
+.active-sort-item {
+    color: #409eff;
+}
 </style>
 
 <style>

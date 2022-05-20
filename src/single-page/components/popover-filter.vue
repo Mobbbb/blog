@@ -53,7 +53,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import DescLabel from '@/single-page/home/card-item/desc-label.vue'
+import DescLabel from '@/single-page/components/card-item/desc-label.vue'
 
 export default {
   	name: 'popover-filter',

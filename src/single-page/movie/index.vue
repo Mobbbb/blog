@@ -19,7 +19,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
 import MovieHeader from './movie-header.vue'
-import AnimationItem from '../home/card-item/index.vue'
+import AnimationItem from '@/single-page/components/card-item/index.vue'
 
 export default {
     name: 'movie',

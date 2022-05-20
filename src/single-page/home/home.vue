@@ -17,7 +17,7 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
-import AnimationItem from './card-item/index.vue'
+import AnimationItem from '@/single-page/components/card-item/index.vue'
 import HomeHeader from './home-header.vue'
 
 export default {
