@@ -1,9 +1,18 @@
-import { filterDataByRateScore, filterDataByText, movieTotalScore, initMovieListData } from '@/libs/data-processing'
-import { movieRateScoreConfig } from '@/config/constant.js'
+import { 
+    filterDataByRateScore, 
+    filterDataByText, 
+    movieTotalScore, 
+    initMovieListData,
+    filterDataByLabel,
+    sortDataByDateHandle,
+    sortDataByScoreHandle,
+ } from '@/libs/data-processing'
+import { movieRateScoreConfig, dateType, scoreType, } from '@/config/constant.js'
 import { fetchMovieListData } from '@/api/movie.js'
 import { deepClone } from '@/libs/util'
 
 const initSelectedFilter = {
+    label: [],
     rateScore: [0, movieTotalScore],
 }
 
@@ -11,10 +20,12 @@ const movie = {
     namespaced: true,
     state() {
         return {
+            selectedSortType: '',
             isLoading: false,
             movieList: [],
             filterSearchTextData: [],
             filterConfig: {
+                allLabelArr: [],
                 rateScore: movieRateScoreConfig,
             },
             selectedFilter: deepClone(initSelectedFilter),
@@ -22,11 +33,20 @@ const movie = {
     },
     getters: {
         showMovieList(state, getters, rootState) {
+            let showData = []
             if (rootState.app.searchFlag) {
-                return state.filterSearchTextData
+                showData = state.filterSearchTextData
             } else {
-                return getters.innerPageFilterData
+                showData = getters.innerPageFilterData
             }
+
+            if (state.selectedSortType === dateType.value) {
+                showData = sortDataByDateHandle(showData)
+            } else if (state.selectedSortType === scoreType.value) {
+                showData = sortDataByScoreHandle(showData)
+            }
+
+            return showData
         },
         innerPageFilterData(state) {
             return state.movieList
@@ -36,6 +56,7 @@ const movie = {
             || state.selectedFilter.rateScore[1] !== movieTotalScore
 
             return {
+                hasSelectedLabel: state.selectedFilter.label.length,
                 hasSelectedRateScore,
             }
         },
@@ -58,8 +79,21 @@ const movie = {
         resetSelectedFilter(state) {
             state.selectedFilter = deepClone(initSelectedFilter)
         },
+        setSelectedLabel(state, data) {
+            if (!state.selectedFilter.label.includes(data)) {
+                state.selectedFilter.label.push(data)
+            } else {
+                state.selectedFilter.label.remove(data)
+            }
+        },
         setSelectedRateScore(state, data) {
             state.selectedFilter.rateScore = data
+        },
+        setAllLabelArr(state, data) {
+            state.filterConfig.allLabelArr = data
+        },
+        updateSelectedSortType(state, value) {
+            state.selectedSortType = value
         },
     },
     actions: {
@@ -70,7 +104,10 @@ const movie = {
             const { data: listData = [] } = await fetchMovieListData() || {}
             commit('setLoadingStatus', false)
 
-            commit('setMovieList', initMovieListData(listData))
+            const { data, allLabelArr } = initMovieListData(listData)
+            
+            commit('setAllLabelArr', allLabelArr)
+            commit('setMovieList', data)
         },
         /**
          * @description 按筛选条件过滤数据
@@ -85,6 +122,11 @@ const movie = {
                 filterData = filterDataByText(text, state.movieList)
             } else {
                 filterData = state.movieList
+            }
+
+            // 过滤勾选的label
+            if (getters.filterSelectedStatusConfig.hasSelectedLabel) {
+                filterData = filterDataByLabel(state.selectedFilter.label, filterData)
             }
 
             // 过滤评分

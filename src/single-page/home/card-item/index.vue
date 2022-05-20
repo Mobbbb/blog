@@ -3,7 +3,7 @@
         <div class="image-wrap">
             <img :src="data.cover" :style="imgStyle" :alt="data.showName">
             <div class="movie-versions-icon" @click.stop="clickExtraChapter" v-if="data.movieVersions">番外</div>
-            <template v-if="type === 'movie'">
+            <template v-if="data.type === movieConfig.value || data.type === tvPlayConfig.value">
                 <div class="image-label image-right-label">{{data.years}}</div>
                 <div class="image-label image-bottom-label">{{data.country}}</div>
             </template>
@@ -18,7 +18,7 @@
             </ExtraChapter>
         </div>
         <div class="animation-item-right">
-            <el-tooltip :disabled="data.tooltipDisabled" :content="data.showName" placement="top">
+            <el-tooltip :disabled="data.titleTooltipDisabled" :content="data.showName" placement="top">
                 <h4 class="animation-item-title paddingLeft4" ref="titleRef">{{data.showName}}</h4>
             </el-tooltip>
             <div class="desc-label-wrap" ref="labelWrapRef">
@@ -27,10 +27,15 @@
                     <DescLabel v-else :marginRight="descLabelMarginRight" :name="cell.name"></DescLabel>
                 </template>
             </div>
-            <div class="animation-item-state paddingLeft4 line1-limit" v-if="type === 'movie'">
+            <div class="animation-item-state paddingLeft4" v-if="data.type === movieConfig.value">
                 <span>主演</span>
                 <i></i>
-                <span>{{data.actors.join(' / ')}}</span>
+                <el-tooltip :disabled="data.actorTooltipDisabled" 
+                            :content="data.actors.join(' / ')" 
+                            placement="top" 
+                            popper-class="actor-tooltips-content">
+                    <span ref="actorNames">{{data.actors.join(' / ')}}</span>
+                </el-tooltip>
             </div>
             <div class="animation-item-state paddingLeft4" v-else>
                 <span v-if="data.endProgress === data.episodes">已看完</span>
@@ -48,6 +53,7 @@
 <script>
 import { ref, defineAsyncComponent } from 'vue'
 import { genExtraChapterShowMode, imgConfig } from '@/libs/data-processing'
+import { tvPlayConfig, movieConfig } from '@/config/constant'
 import DescLabel from './desc-label.vue'
 import MoreLabel from './more-label.vue'
 
@@ -68,6 +74,8 @@ export default {
     },
     data() {
         return {
+            tvPlayConfig,
+            movieConfig,
             descLabelMarginRight,
             labelStyle,
             extraChapterList: [],
@@ -114,11 +122,15 @@ export default {
          * @description 标题悬浮是否出现tooltip
          */
         setCurrentShowListTooltipPrototype() {
-            if (typeof this.data.tooltipDisabled === 'undefined') {
+            if (typeof this.data.titleTooltipDisabled === 'undefined') {
                 const { clientWidth = 0, scrollWidth = 0 } = this.$refs.titleRef
-                const tooltipDisabled = clientWidth >= scrollWidth
 
-                this.listData[this.data._index].tooltipDisabled = ref(tooltipDisabled)
+                this.listData[this.data._index].titleTooltipDisabled = ref(clientWidth >= scrollWidth)
+            }
+            if (typeof this.data.actorTooltipDisabled === 'undefined' && this.data.type === movieConfig.value) {
+                const { clientWidth = 0, scrollWidth = 0 } = this.$refs.actorNames
+
+                this.listData[this.data._index].actorTooltipDisabled = ref(clientWidth >= scrollWidth)
             }
         },
         /**
@@ -303,18 +315,27 @@ export default {
     font-size: 12px;
     color: #999;
     margin-bottom: 6px;
+    display: flex;
+    align-items: center;
 }
 .animation-item-state i {
     display: inline-block;
     vertical-align: top;
-    margin-top: 3px;
     margin-right: 6px;
     width: 1px;
     height: 10px;
     background-color: #b7c0cc;
+    flex-shrink: 0;
+}
+.animation-item-state span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .animation-item-state span:first-of-type {
     margin-right: 6px;
+    flex-shrink: 0;
 }
 .animation-item-tips {
     font-size: 12px;
@@ -323,12 +344,10 @@ export default {
 .paddingLeft4 {
     padding-left: 4px;
 }
-.line1-limit {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-break: break-all;
+</style>
+
+<style>
+.actor-tooltips-content {
+    max-width: 160px;
 }
 </style>

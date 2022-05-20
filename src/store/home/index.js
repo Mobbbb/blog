@@ -6,7 +6,6 @@ import {
     January, 
     dateType, 
     scoreType,
-    defaultHiddenType,
     terminationConfig,
     unratedConfig,
 } from '@/config/constant.js'
@@ -71,9 +70,7 @@ const home = {
         },
         innerPageFilterData(state) { // 常规展示的年-月数据项
             const currentTimeData = state.animationList.filter((item) => {
-                return item.years === state.selectedYears 
-                    && item.month === state.activeMonth 
-                    && !defaultHiddenType.includes(item.type)
+                return item.years === state.selectedYears && item.month === state.activeMonth
             })
 
             // 过滤页脚的筛选项

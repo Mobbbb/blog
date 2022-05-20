@@ -1,5 +1,6 @@
 <template>
     <div class="movie-wrap mobile-wrap">
+        <MovieHeader></MovieHeader>
         <div class="movie-content" v-loading="isLoading">
             <template v-if="showMovieList.length">
                 <AnimationItem  type="movie"
@@ -17,11 +18,13 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
+import MovieHeader from './movie-header.vue'
 import AnimationItem from '../home/card-item/index.vue'
 
 export default {
     name: 'movie',
     components: {
+        MovieHeader,
         AnimationItem,
     },
     computed: {

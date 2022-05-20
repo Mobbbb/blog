@@ -53,20 +53,30 @@ export const initHomeListData = (scoreMap, data) => {
 }
 
 export const initMovieListData = (data) => {
+    const allLabelArr = []
     data.forEach((item, index) => {
         let labelArr = [], hoverShowLabel = []
 
         item.label.forEach(name => {
+            if (!allLabelArr.includes(name)) {
+                allLabelArr.push(name)
+            }
             labelArr.push({ name })
             hoverShowLabel.push(name)
         })
 
         item.showName = item.name
         item.label = labelArr
-        item.score = item.score / 2
+        item.hoverShowLabel = hoverShowLabel
+        
         item._index = index
+        item.score = item.score / 2
     })
-    return data
+
+    return {
+        data,
+        allLabelArr
+    }
 }
 
 /**
@@ -221,10 +231,6 @@ export const filterDataByOthersCheck = (checkArr, data) => {
     // 过滤未评分数据
     if (checkArr.includes(unratedConfig.value)) {
         filterData = excludeUnratedItem(filterData)
-    }
-    // 筛选电视剧
-    if (checkArr.includes(tvPlayConfig.value)) {
-        filterData = includeTvPlayItem(filterData)
     }
     // 筛选番外
     if (checkArr.includes(extraChapterConfig.value)) {
