@@ -40,6 +40,16 @@ export const summaryDetailRoute = {
     },
     component: () => import('@/single-page/summary/detail/index.vue')
 }
+export const movieDetailRoute = {
+    path: "/movie/detail",
+    name: "movieDetail",
+    meta: {
+        level: 1,
+        name: '电影详情',
+        parent: 'movie',
+    },
+    component: () => import('@/single-page/movie/detail/index.vue')
+}
 export const notFoundRoute = {
     path: "/:pathMatch(.*)",
     meta: {
@@ -51,6 +61,7 @@ export const notFoundRoute = {
 export const routes = [
     homeRoute,
     movieRoute,
+    movieDetailRoute,
     summaryRoute,
     summaryDetailRoute,
     notFoundRoute,

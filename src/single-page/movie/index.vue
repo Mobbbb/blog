@@ -8,7 +8,8 @@
                                 :key="item._index"
                                 :searchFlag="searchFlag"
                                 :listData="movieList" 
-                                v-for="item in showMovieList">
+                                v-for="item in showMovieList"
+                                @click="clickHandle(item.name)">
                 </AnimationItem>
             </template>
             <el-empty :description="isLoading ? ' ' : '暂无数据'" v-else></el-empty>
@@ -46,6 +47,14 @@ export default {
         ...mapActions('movie', [
             'getMovieListHandle',
         ]),
+        clickHandle(name) {
+            this.$router.push({
+                name: 'movieDetail',
+                query: {
+                    name,
+                },
+            })
+        },
     },
 }
 </script>

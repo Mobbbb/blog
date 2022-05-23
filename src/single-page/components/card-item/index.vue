@@ -209,6 +209,7 @@ export default {
     margin-bottom: 20px;
     box-sizing: border-box;
     float: left;
+    cursor: pointer;
 }
 .image-wrap {
     position: relative;
