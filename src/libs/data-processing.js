@@ -70,7 +70,7 @@ export const initMovieListData = (data) => {
         item.hoverShowLabel = hoverShowLabel
         
         item._index = index
-        item.score = item.score / 2
+        item.score = Number((item.score / 2).toFixed(1))
     })
 
     return {

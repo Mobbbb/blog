@@ -34,24 +34,27 @@ export const months = [
 export const homeRateScoreConfig = {
     max: 5,
     step: 0.1,
-    formatTooltip: (value) => {
+    formatTooltip: (value, noValue = false) => {
+        let label = ''
         if (value < 0) {
             return '未选择'
         } if (value < 1) {
-            return `非常差: ${value}`
+            label = '非常差'
         } else if (value < 2.5) {
-            return `差: ${value}`
+            label = '差'
         } else if (value < 3) {
-            return `较差: ${value}`
+            label = '较差'
         } else if (value < 3.5) {
-            return `一般: ${value}`
+            label = '一般'
         } else if (value < 4) {
-            return `较好: ${value}`
+            label = '较好'
         } else if (value < 4.5) {
-            return `好: ${value}`
+            label = '好'
         } else {
-            return `非常好: ${value}`
+            label = '非常好'
         }
+
+        return noValue ? label : `${label}: ${value}`
     },
 }
 
@@ -107,6 +110,8 @@ export const movieConfig = {
 }
 
 export const othersCheckConfig = [terminationConfig, extraChapterConfig]
+
+export const mediaTypeConfig = [tvPlayConfig, extraChapterConfig, movieConfig]
 
 export const summaryTypeMap = {
     TEXT: 'text',
