@@ -50,7 +50,7 @@ export default {
         clickHandle(name) {
             this.$router.push({
                 name: 'movieDetail',
-                query: {
+                params: {
                     name,
                 },
             })

@@ -7,7 +7,8 @@
                                 :key="item._index"
                                 :searchFlag="searchFlag"
                                 :listData="animationList" 
-                                v-for="item in showAnimationList">
+                                v-for="item in showAnimationList"
+                                @click="clickHandle(item.name, item.season)">
                 </AnimationItem>
             </template>
             <el-empty :description="isLoading ? ' ' : '暂无数据'" v-else></el-empty>
@@ -45,6 +46,17 @@ export default {
         ...mapActions('home', [
             'getAnimationHandle',
         ]),
+        clickHandle(name, season) {
+            this.$router.push({
+                name: 'homeDetail',
+                params: {
+                    name,
+                },
+                query: {
+                    season,
+                },
+            })
+        },
     },
 }
 </script>

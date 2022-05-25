@@ -109,9 +109,14 @@ export const movieConfig = {
     value: '5',
 }
 
+export const animationConfig = {
+    label: '动漫',
+    value: '6',
+}
+
 export const othersCheckConfig = [terminationConfig, extraChapterConfig]
 
-export const mediaTypeConfig = [tvPlayConfig, extraChapterConfig, movieConfig]
+export const mediaTypeConfig = [tvPlayConfig, extraChapterConfig, movieConfig, animationConfig]
 
 export const summaryTypeMap = {
     TEXT: 'text',

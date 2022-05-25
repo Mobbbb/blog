@@ -9,6 +9,7 @@ import {
     textTypeMap, 
     summaryTypeMap,
     defaultHideConfig,
+    animationConfig,
 } from '@/config/constant'
 
 export const homeTotalScore = 5
@@ -40,6 +41,7 @@ export const initHomeListData = (scoreMap, data) => {
         }
         item.label = labelArr
         item.hoverShowLabel = hoverShowLabel
+        item.type = animationConfig.value
 
         item._index = index
         computedCurrentShowListScore(item, homeTotalScore, scoreMap)

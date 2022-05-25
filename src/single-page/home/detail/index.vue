@@ -1,8 +1,8 @@
 <template>
     <div class="movie-detail">
-        <MediaDetail :params="movieInfo"></MediaDetail>
+        <MediaDetail :params="mediaInfo" showDescLine></MediaDetail>
         <h4 class="comment-label">评论</h4>
-        <div class="comment-content">{{movieInfo.comment || '暂无评论。'}}</div>
+        <div class="comment-content">{{mediaInfo.comment || '暂无评论。'}}</div>
     </div>
 </template>
 
@@ -11,19 +11,20 @@ import { mapActions, mapState } from 'vuex'
 import MediaDetail from '@/single-page/components/media-detail.vue'
 
 export default {
-    name: 'movie-detail',
+    name: 'home-detail',
     components: {
         MediaDetail,
     },
     computed: {
-        ...mapState('movie', [
-            'movieList',
+        ...mapState('home', [
+            'animationList',
         ]),
-        movieInfo() {
+        mediaInfo() {
             let info = {}
             let name = this.$route.params.name
-            this.movieList.forEach(item => {
-                if (name === item.name) {
+            let season = this.$route.query.season
+            this.animationList.forEach(item => {
+                if (name === item.name && season === item.season) {
                     info = item
                 }
             })
@@ -31,11 +32,11 @@ export default {
         },
     },
     mounted() {
-        this.getMovieListHandle()
+        this.getAnimationHandle()
     },
     methods: {
-        ...mapActions('movie', [
-            'getMovieListHandle',
+        ...mapActions('home', [
+            'getAnimationHandle',
         ]),
     },
 }

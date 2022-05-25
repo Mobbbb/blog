@@ -11,6 +11,7 @@ export const homeRoute = {
     },
     component: () => import('@/single-page/home/home.vue')
 }
+
 export const movieRoute = {
     path: "/movie/",
     name: "movie",
@@ -20,6 +21,7 @@ export const movieRoute = {
     },
     component: () => import('@/single-page/movie/index.vue')
 }
+
 export const summaryRoute = {
     path: "/summary/",
     name: "summary",
@@ -30,6 +32,7 @@ export const summaryRoute = {
     },
     component: () => import('@/single-page/summary/index.vue')
 }
+
 export const summaryDetailRoute = {
     path: "/summary/detail",
     name: "summaryDetail",
@@ -40,8 +43,9 @@ export const summaryDetailRoute = {
     },
     component: () => import('@/single-page/summary/detail/index.vue')
 }
+
 export const movieDetailRoute = {
-    path: "/movie/detail",
+    path: "/movie/detail/:name",
     name: "movieDetail",
     meta: {
         level: 1,
@@ -50,6 +54,18 @@ export const movieDetailRoute = {
     },
     component: () => import('@/single-page/movie/detail/index.vue')
 }
+
+export const homeDetailRoute = {
+    path: "/home/detail/:name",
+    name: "homeDetail",
+    meta: {
+        level: 1,
+        name: '动漫详情',
+        parent: 'home',
+    },
+    component: () => import('@/single-page/home/detail/index.vue')
+}
+
 export const notFoundRoute = {
     path: "/:pathMatch(.*)",
     meta: {
@@ -60,6 +76,7 @@ export const notFoundRoute = {
 
 export const routes = [
     homeRoute,
+    homeDetailRoute,
     movieRoute,
     movieDetailRoute,
     summaryRoute,
