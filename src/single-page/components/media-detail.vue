@@ -28,7 +28,7 @@
                         </div>
                     </div>
                     <div class="media-info-count-right">
-                        <div class="wait-to-score" v-if="params.waitToScore">评分计算中</div>
+                        <div class="wait-to-score" v-if="params.waitToScore">观看中</div>
                         <template v-else>
                             <span class="media-info-score">{{params.score}}</span>
                             <div class="media-info-score-wrap">
@@ -41,18 +41,22 @@
                 <div class="actor-wrap" v-if="params.actors">
                     演员：<span v-for="item in params.actors" :key="item" class="avtor-label">{{item}}</span>
                 </div>
-                <div class="actor-wrap" v-if="params.scoreLabel && params.scoreLabel.length">
-                    扣分项：<span v-for="item in params.scoreLabel" :key="item" class="avtor-label">{{item}}</span>
-                    <div v-if="episodes">{{episodes}}</div>
+                <div class="progress-wrap" v-if="isAnimation">
+                    <span>{{progressLabel}}</span><i></i><span>{{episodes}}</span>
                 </div>
-                <div class="description-wrap">简介：{{params.description || '暂无'}}</div>
+                <div class="score-wrap" v-if="isAnimation">
+                    扣分项：
+                    <span v-for="item in scoreLabel" :key="item" class="avtor-label">{{item}}</span>
+                    <span v-if="!scoreLabel.length">无</span>
+                </div>
+                <div class="description-wrap" v-if="!isAnimation">简介：{{params.description || '暂无'}}</div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import { homeRateScoreConfig, mediaTypeConfig } from '@/config/constant'
+import { homeRateScoreConfig, mediaTypeConfig, animationConfig } from '@/config/constant'
 import DescLabel from '@/single-page/components/card-item/desc-label.vue'
 
 export default {
@@ -82,6 +86,9 @@ export default {
         descLabel() {
             return this.params.label || []
         },
+        scoreLabel() {
+            return this.params.scoreLabel || []
+        },
         imageUrl() {
             return this.params.cover || ''
         },
@@ -94,14 +101,23 @@ export default {
             })
             return label
         },
-        episodes() {
+        isAnimation() {
+            return this.params.type === animationConfig.value
+        },
+        progressLabel() {
             let label = ''
-            if (this.params.episodes === '*') {
-                label = '连载中'
-            } else if (this.params.episodes) {
-                label = `已完结, 全${this.params.episodes}话`
+            if (this.params.endProgress === this.params.episodes) {
+                label = '已看完'
+            } else if (this.params.waitToScore || this.params.watching) {
+                label = `观看至${this.params.endProgress}话`
+            } else {
+                label = `终止于${this.params.endProgress}话`
             }
+            
             return label
+        },
+        episodes() {
+            return Number.isFinite(Number(this.params.episodes)) ? `共${this.params.episodes}话` : '连载中'
         },
         style() {
             if (this.imageUrl) {
@@ -241,7 +257,7 @@ export default {
 }
 .wait-to-score {
     line-height: 1;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 6px;
     background-color: hsla(0, 0%, 100%, .12);
     border: 1px solid hsla(0, 0%, 100%, .5);
@@ -256,16 +272,37 @@ export default {
 }
 .actor-wrap {
     margin: 28px 0 12px 0;
+    line-height: 1;
+}
+.progress-wrap {
+    margin: 28px 0 12px 0;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+}
+.progress-wrap i {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 6px;
+    width: 1px;
+    height: 10px;
+    background-color: #b7c0cc;
+    flex-shrink: 0;
 }
 .description-wrap {
     margin-top: 28px;
 }
+.score-wrap {
+    margin-top: 22px;
+}
 .avtor-label {
+    display: inline-block;
+    white-space: nowrap;
     line-height: 1;
     border: 1px solid white;
     border-radius: 2px;
     padding: 0 6px 1px 6px;
-    margin-right: 6px;
+    margin: 6px 6px 0 0;
     background-color: hsla(0, 0%, 100%, .12);
 }
 </style>
