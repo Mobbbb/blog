@@ -44,12 +44,12 @@
                 <div class="progress-wrap" v-if="isAnimation">
                     <span>{{progressLabel}}</span><i></i><span>{{episodes}}</span>
                 </div>
+                <div class="description-wrap">简介：{{params.description || '暂无'}}</div>
                 <div class="score-wrap" v-if="isAnimation">
                     扣分项：
                     <span v-for="item in scoreLabel" :key="item" class="avtor-label">{{item}}</span>
                     <span v-if="!scoreLabel.length">无</span>
                 </div>
-                <div class="description-wrap" v-if="!isAnimation">简介：{{params.description || '暂无'}}</div>
             </div>
         </div>
     </div>
@@ -113,7 +113,7 @@ export default {
             } else {
                 label = `终止于${this.params.endProgress}话`
             }
-            
+
             return label
         },
         episodes() {
