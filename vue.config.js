@@ -1,6 +1,6 @@
 'use strict'
 
-const name = 'AMS - Animation.Moive.Summary'
+const name = 'AMS - Animation.Movie.Summary'
 const shortName = 'AMS'
 const outputDir = 'dist'
 const proxyConfig = {
