@@ -16,7 +16,7 @@ html, body{
     overflow: hidden;
     background: #f4f5f7;
     -webkit-tap-highlight-color: transparent;
-    -webkit-text-size-adjust: 100%;
+    -webkit-text-size-adjust: none!important;
 }
 #app{
 	font-family: Microsoft Yahei,Tahoma,Helvetica,Arial,"\5B8B\4F53",sans-serif;
